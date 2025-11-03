@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import Button from '@/components/ui/Button'
+import Link from "next/link"
 
 const navigation = [
-  { name: 'Home', href: '#home' },
-  { name: 'About', href: '#about' },
-  { name: 'Events', href: '#events' },
-  { name: 'Partners', href: '#partners' },
+  { name: 'Beranda', href: '#home' },
+  { name: 'Tentang', href: '#about' },
+  { name: 'Event', href: '#events' },
+  { name: 'Partner', href: '#partners' },
 ]
 
 export default function Header() {
@@ -16,6 +17,10 @@ export default function Header() {
   const [activeSection, setActiveSection] = useState('home')
 
   useEffect(() => {
+    // if (['/login', '/register'].includes(pathname)) {
+    //   setIsScrolled(true)
+    //   // return false
+    // }
     const handleScroll = () => {
       // Background change on scroll
       if (window.scrollY > 50) {
@@ -34,7 +39,7 @@ export default function Header() {
         }
         return false
       })
-      
+
       if (current) {
         setActiveSection(current)
       }
@@ -47,17 +52,17 @@ export default function Header() {
   const handleSmoothScroll = (href) => {
     const targetId = href.substring(1)
     const targetElement = document.getElementById(targetId)
-    
+
     if (targetElement) {
       const headerHeight = 30 // Height of sticky header
       const targetPosition = targetElement.offsetTop - headerHeight
-      
+
       window.scrollTo({
         top: targetPosition,
         behavior: 'smooth'
       })
     }
-    
+
     // Close mobile menu after click
     // setIsMenuOpen(false)
   }
@@ -65,15 +70,15 @@ export default function Header() {
   return (
     <header className={`
       fixed top-0 w-full z-50 transition-all duration-300
-      ${isScrolled 
-        ? 'bg-white/95 backdrop-blur-md shadow-sm' 
+      ${isScrolled
+        ? 'bg-white/95 backdrop-blur-md shadow-sm'
         : 'bg-transparent'
       }
     `}>
       <div className="container mx-auto px-4">
         <nav className="flex justify-between items-center py-4">
           {/* Logo dengan smooth scroll ke home */}
-          <button 
+          <button
             onClick={() => handleSmoothScroll('#home')}
             className={`
               text-2xl font-bold transition duration-300 hover:scale-105 transform cursor-pointer
@@ -91,7 +96,7 @@ export default function Header() {
                 onClick={() => handleSmoothScroll(item.href)}
                 className={`
                   relative transition-all duration-300 font-medium py-2 cursor-pointer
-                  ${isScrolled 
+                  ${isScrolled
                     ? activeSection === item.href.substring(1)
                       ? 'text-primary'
                       : 'text-neutral-800 hover:text-primary'
@@ -115,22 +120,26 @@ export default function Header() {
 
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button 
-              variant={isScrolled ? "outline" : "white-outline"} 
-              size="sm"
-            >
-              Login
-            </Button>
-            <Button 
-              variant={isScrolled ? "primary" : "white"} 
-              size="sm"
-            >
-              Register
-            </Button>
+            <Link href={'/login'}>
+              <Button
+                variant={isScrolled ? "outline" : "white-outline"}
+                size="sm"
+              >
+                Masuk
+              </Button>
+            </Link>
+            <Link href={'/register'}>
+              <Button
+                variant={isScrolled ? "primary" : "white"}
+                size="sm"
+              >
+                Registrasi
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
-          <button 
+          <button
             className="md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
@@ -155,8 +164,8 @@ export default function Header() {
         {isMenuOpen && (
           <div className={`
             md:hidden py-4 border-t transition-all duration-300
-            ${isScrolled 
-              ? 'bg-white/95 backdrop-blur-md border-gray-200' 
+            ${isScrolled
+              ? 'bg-white/95 backdrop-blur-md border-gray-200'
               : 'bg-black/20 backdrop-blur-md border-white/20'
             }
           `}>
@@ -167,7 +176,7 @@ export default function Header() {
                   onClick={() => handleSmoothScroll(item.href)}
                   className={`
                     text-left transition-all duration-300 font-medium py-2 px-2 rounded-lg
-                    ${isScrolled 
+                    ${isScrolled
                       ? activeSection === item.href.substring(1)
                         ? 'bg-primary/10 text-primary border-l-4 border-primary'
                         : 'text-neutral-800 hover:text-primary hover:bg-gray-100'
@@ -181,16 +190,16 @@ export default function Header() {
                 </button>
               ))}
               <div className="flex space-x-4 pt-4">
-                <Button 
-                  variant={isScrolled ? "outline" : "white-outline"} 
-                  size="sm" 
+                <Button
+                  variant={isScrolled ? "outline" : "white-outline"}
+                  size="sm"
                   fullWidth
                 >
                   Login
                 </Button>
-                <Button 
-                  variant={isScrolled ? "primary" : "white"} 
-                  size="sm" 
+                <Button
+                  variant={isScrolled ? "primary" : "white"}
+                  size="sm"
                   fullWidth
                 >
                   Register
