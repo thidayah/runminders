@@ -1,26 +1,113 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Primary Colors - Premium, Trustworthy */
+  --color-primary: #2C3E50;
+  --color-primary-light: #EAECEE;
+  --color-primary-dark: #1B2631;
+  
+  /* Secondary Colors - Energy, Action */
+  --color-secondary: #E74C3C;
+  --color-secondary-light: #FDEDEC;
+  --color-secondary-dark: #C0392B;
+  
+  /* Accent Colors - Achievement, Winner */
+  --color-accent: #F1C40F;
+  --color-accent-light: #FEF9E7;
+  --color-accent-dark: #D4AC0D;
+  
+  /* Neutral Colors - Balance, Professional */
+  --color-neutral: #7F8C8D;
+  --color-neutral-light: #B2BABB;
+  --color-neutral-dark: #616A6B;
+  
+  /* Gray Scale */
+  --color-gray-50: #FAFAFA;
+  --color-gray-100: #F5F5F5;
+  --color-gray-800: #424242;
+  
+  /* Font Family */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Montserrat', sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    font-family: var(--font-sans);
+  }
+  
+  body {
+    @apply text-primary bg-white;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+  .btn-premium {
+    @apply bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200;
+  }
+  
+  .btn-gold {
+    @apply bg-accent hover:bg-accent-dark text-primary font-bold py-3 px-6 rounded-lg transition-colors duration-200;
+  }
+}
+
+/* Smooth scroll behavior for the whole page */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #F1C40F;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #f1c40fd2;
+}
+
+/* Active section highlight animation */
+@keyframes sectionHighlight {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.active-section {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(231, 76, 60, 0.1),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: sectionHighlight 2s ease-in-out;
+}
+
+@layer utilities {
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .aspect-square {
+    aspect-ratio: 1 / 1;
+  }
 }
