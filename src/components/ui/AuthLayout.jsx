@@ -27,7 +27,7 @@ export default function AuthLayout({ children, title, subtitle }) {
           </div>
 
           {/* Back to Home */}
-          <div className="text-center mt-8">
+          {/* <div className="text-center mt-8">
             <Link 
               href={'/'}
               className="text-gray-600 hover:text-accent transition-colors duration-200 flex items-center justify-center gap-2 mx-auto"
@@ -35,7 +35,7 @@ export default function AuthLayout({ children, title, subtitle }) {
               <span>←</span>
               Kembali ke Beranda
             </Link>
-          </div>
+          </div> */}
         </div>
       </div>
 
