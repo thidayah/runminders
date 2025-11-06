@@ -57,12 +57,12 @@ export default function LoginForm() {
           <label htmlFor="password" className="block text-sm font-medium text-gray-700">
             Kata Sandi
           </label>
-          <button
-            type="button"
+          <Link
+            href={'/forgot-password'}
             className="text-sm text-primary hover:text-primary/80 hover:underline font-medium cursor-pointer"
           >
             Lupa Kata Sandi?
-          </button>
+          </Link>
         </div>
         <input
           id="password"
