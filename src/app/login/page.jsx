@@ -4,13 +4,13 @@ import Layout from "@/components/layout/Layout"
 
 export default function Login() {
   return (
-    // <Layout>
+    <Layout>
       <AuthLayout
         title="Welcome Back!"
         subtitle="Masuk ke akun Anda"
       >
         <LoginForm />
       </AuthLayout>
-    // </Layout>
+    </Layout>
   )
 }
