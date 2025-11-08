@@ -110,7 +110,7 @@ const promoSlides = [
     }
     
     // Close mobile menu after click
-    setIsMenuOpen(false)
+    // setIsMenuOpen(false)
   }
 
 export default function HeroSection() {
