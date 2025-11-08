@@ -48,6 +48,10 @@ export default function Footer() {
 
               {/* Social Media */}
               <div className="flex space-x-4 mt-4">
+                <a href="https://wa.me/6281234567890" className="hover:text-accent transition-colors flex items-center gap-1">
+                  <Icon icon="mdi:whatsapp" width="20" height="20" />
+                  {/* <span className="hidden sm:inline">Instagram</span> */}
+                </a>
                 <a href="#" className="hover:text-accent transition-colors flex items-center gap-1">
                   <Icon icon="mdi:instagram" width="20" height="20" />
                   {/* <span className="hidden sm:inline">Instagram</span> */}
@@ -56,10 +60,10 @@ export default function Footer() {
                   <Icon icon="simple-icons:threads" width="18" height="18" />
                   {/* <span className="hidden sm:inline">Threads</span> */}
                 </a>
-                <a href="#" className="hover:text-accent transition-colors flex items-center gap-1">
+                {/* <a href="#" className="hover:text-accent transition-colors flex items-center gap-1">
                   <Icon icon="ic:baseline-tiktok" width="20" height="20" />
-                  {/* <span className="hidden sm:inline">Tiktok</span> */}
-                </a>
+                  <span className="hidden sm:inline">Tiktok</span>
+                </a> */}
               </div>
             </div>
           </div>
