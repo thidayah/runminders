@@ -151,10 +151,10 @@ export default function HeroSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <div className="text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6 border border-white/20">
+            {/* <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6 border border-white/20">
               <span className="w-2 h-2 bg-accent rounded-full animate-ping"></span>
               <span className="text-white/90 text-sm font-medium">Platform Event Lari Terbaru di Indonesia</span>
-            </div>
+            </div> */}
 
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
               Temukan
@@ -192,7 +192,7 @@ export default function HeroSection() {
           </div>
 
           {/* Right Content - Promo Slider */}
-          <div className="relative">
+          <div className="relative hidden">
             <div className="bg-white/10 backdrop-blur-md rounded-3xl p-1 border border-white/20 shadow-2xl">
               {/* Main Promo Card */}
               <div className="bg-gradient-to-br from-white to-gray-100 rounded-2xl p-8 relative overflow-hidden">
