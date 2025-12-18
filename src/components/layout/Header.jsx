@@ -173,14 +173,14 @@ export default function Header() {
               size="sm"
               onClick={() => router.push('/login')}
             >
-              Login
+              Masuk
             </Button>
             <Button 
               variant={getTextColor() === 'text-white' && !isScrolled ? "white" : "primary"} 
               size="sm"
               onClick={() => router.push('/register')}
             >
-              Register
+              Daftar
             </Button>
           </div>
 
