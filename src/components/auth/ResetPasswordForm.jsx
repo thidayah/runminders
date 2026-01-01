@@ -1,17 +1,29 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/Button'
 import Link from "next/link"
 import { Icon } from '@iconify/react'
 
-export default function ForgotPasswordForm() {
+export default function ResetPasswordForm({ token }) {
+  const router = useRouter()  
+  // const searchParams = useSearchParams()
+  // const token = searchParams.get('token')
+  
   const [formData, setFormData] = useState({
-    email: '',
+    password: '',
+    confirmPassword: ''
   })
   const [isLoading, setIsLoading] = useState(false)
-  const [apiResponse, setApiResponse] = useState(null)
   const [errors, setErrors] = useState({})
+  const [apiResponse, setApiResponse] = useState(null)
+
+  useEffect(() => {    
+    if (!token) {
+      router.push('/login')
+    }
+  }, [token])
 
   const handleChange = (e) => {
     setFormData({
@@ -33,18 +45,6 @@ export default function ForgotPasswordForm() {
     }
   }
 
-  const validateForm = () => {
-    const newErrors = {}
-    
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email diperlukan'
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Format email tidak valid'
-    }
-    
-    return newErrors
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault()
     
@@ -52,23 +52,18 @@ export default function ForgotPasswordForm() {
     setApiResponse(null)
     setErrors({})
     
-    // Validate form
-    const formErrors = validateForm()
-    if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors)
-      return
-    }
-    
     setIsLoading(true)
 
     try {
-      const response = await fetch('/api/auth/forgot-password', {
+      const response = await fetch('/api/auth/reset-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: formData.email.trim().toLowerCase()
+          token: token,
+          password: formData.password,
+          confirm_password: formData.confirmPassword
         })
       })
 
@@ -80,17 +75,18 @@ export default function ForgotPasswordForm() {
       if (result.success) {
         // Clear form on success
         setFormData({
-          email: '',
+          password: '',
+          confirmPassword: ''
         })
         
-        // Optional: Redirect after successful submission
-        // setTimeout(() => {
-        //   router.push('/login')
-        // }, 3000)
+        // Redirect to login after 3 seconds
+        setTimeout(() => {
+          router.push('/login')
+        }, 10000)
       }
       
     } catch (error) {
-      console.error('Forgot password error:', error)
+      console.error('Reset password error:', error)
       setApiResponse({
         success: false,
         message: 'Terjadi kesalahan jaringan. Silakan coba lagi.'
@@ -130,12 +126,10 @@ export default function ForgotPasswordForm() {
                 {apiResponse.message}
               </p>
               {apiResponse.success && (
-                <div className="mt-3 space-y-2">
-                  <div className="text-xs text-green-600 space-y-1">
-                    <div className="flex items-center">
-                      <span>Cek folder spam jika tidak menemukan email</span>
-                    </div>
-                  </div>
+                <div className="mt-2">
+                  <p className="text-sm text-green-700">
+                    Anda akan dialihkan ke halaman login dalam 10 detik...
+                  </p>
                 </div>
               )}
             </div>
@@ -143,26 +137,45 @@ export default function ForgotPasswordForm() {
         </div>
       )}
 
-      {/* Email Input */}
+      {/* Password */}
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-          Alamat Email
+        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+          Kata Sandi Baru
         </label>
         <input
-          id="email"
-          name="email"
-          type="email"
-          autoComplete="email"
+          id="password"
+          name="password"
+          type="password"
+          autoComplete="new-password"
           required
-          value={formData.email}
+          value={formData.password}
           onChange={handleChange}
-          className={`w-full px-4 py-3 border ${
-            errors.email ? 'border-red-300' : 'border-gray-300'
-          } rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200`}
-          placeholder="email.anda@example.com"
+          className={`w-full px-4 py-3 border ${errors.password ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200`}
+          placeholder="Masukkan password baru"
         />
-        {errors.email && (
-          <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+        {errors.password && (
+          <p className="mt-1 text-sm text-red-600">{errors.password}</p>
+        )}
+      </div>
+
+      {/* Confirm Password */}
+      <div>
+        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+          Konfirmasi Kata Sandi
+        </label>
+        <input
+          id="confirmPassword"
+          name="confirmPassword"
+          type="password"
+          autoComplete="new-password"
+          required
+          value={formData.confirmPassword}
+          onChange={handleChange}
+          className={`w-full px-4 py-3 border ${errors.confirmPassword ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200`}
+          placeholder="Masukkan ulang password baru"
+        />
+        {errors.confirmPassword && (
+          <p className="mt-1 text-sm text-red-600">{errors.confirmPassword}</p>
         )}
       </div>
 
@@ -187,17 +200,16 @@ export default function ForgotPasswordForm() {
         )}
       </Button>
 
-      {/* Additional Links */}
+      {/* Need Help Link */}
       <div className="space-y-4">
-        {/* Login Link */}
         <div className="text-center">
           <p className="text-gray-600">
-            Ingat password Anda?{' '}
+            Butuh bantuan?{' '}
             <Link
-              href={'/login'}
+              href={'/contact'}
               className="text-primary hover:text-primary/80 hover:underline font-semibold cursor-pointer"
             >
-              Masuk
+              Hubungi Support
             </Link>
           </p>
         </div>
