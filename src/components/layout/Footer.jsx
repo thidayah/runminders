@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Brand Info */}
           <div>
-            <div className="text-2xl font-bold text-accent mb-4">RUNminders</div>
+            <div className="text-2xl font-bold text-accent mb-4">Runminders</div>
             <p className="text-gray-300">
               Platform terbaru untuk menemukan dan mendaftar event lari di Indonesia.
             </p>
@@ -70,7 +70,7 @@ export default function Footer() {
 
         {/* Copyright */}
         <div className="border-t  mt-8 pt-8 text-center text-gray-400">
-          &copy; 2024 RUNminders. All rights reserved.
+          &copy; 2024 Runminders. All rights reserved.
         </div>
       </div>
     </footer>
