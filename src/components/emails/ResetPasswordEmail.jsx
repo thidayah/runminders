@@ -4,7 +4,7 @@ export function ResetPasswordEmail({ fullName, resetLink }) {
   const htmlContent = EmailLayout({
     title: 'Reset Password',
     children: `
-      <h2 style="margin: 0; color: #333333;">Reset Password</h2>
+      <div style="font-size: 28px; font-weight: bold; color: #f1c40f; margin-bottom: 15px;">${ 'Reset Password' || process.env.APP_NAME || 'Runminders'}</div>
     </div>
     
     <p style="font-size: 16px; color: #555555; margin-top: 20px;">Halo <strong style="color: #333333;">${fullName || 'Pengguna'}</strong>,</p>
