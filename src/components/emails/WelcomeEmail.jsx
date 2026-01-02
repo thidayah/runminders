@@ -4,8 +4,7 @@ export function WelcomeEmail({ fullName, toEmail }) {
   const htmlContent = EmailLayout({
     title: 'Selamat Datang',
     children: `
-      <div style="font-size: 48px; margin-bottom: 20px;">🎉</div>
-      <h2 style="color: #4F46E5; margin: 0;">Selamat Datang!</h2>
+    <div style="font-size: 28px; font-weight: bold; color: #f1c40f; margin-bottom: 15px;">${ 'Selamat Datang' || process.env.APP_NAME || 'Runminders'}</div>
       <p style="color: #666666;">Akun Anda sudah aktif dan siap digunakan</p>
     </div>
     

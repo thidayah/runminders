@@ -6,6 +6,8 @@ import { WelcomeEmail } from '@/components/emails/WelcomeEmail'
 import { ResetPasswordEmail } from '@/components/emails/ResetPasswordEmail'
 import Button from '@/components/ui/Button'
 import { Icon } from '@iconify/react'
+import { EventRegistrationEmail } from "@/components/emails/EventRegistrationEmail"
+import { PaymentSuccessEmail } from "@/components/emails/PaymentSuccessEmail"
 
 export default function EmailPreviewPage() {
   const [selectedEmail, setSelectedEmail] = useState('verification')
@@ -38,6 +40,30 @@ export default function EmailPreviewPage() {
           fullName: formData.fullName,
           resetLink
         })
+      case 'registration':
+        return EventRegistrationEmail({
+          fullName: formData.fullName,
+          eventTitle: 'Sample Event Title',
+          eventDate: 'December 31, 2024',
+          categoryName: 'Half Marathon',
+          registrationNumber: 'REG-2024-0001',
+          paymentAmount: 150000,
+          snapTransaction: {
+            redirect_url: 'https://payment.midtrans.com/snap/v2/vtweb/your-transaction-id'
+          },
+          // snapTransaction: null,
+          isFree: false
+        })
+      case 'payment_success':
+        return PaymentSuccessEmail({
+          fullName: formData.fullName,
+          eventTitle: 'Sample Event Title',
+          eventDate: 'December 31, 2024',
+          categoryName: 'Half Marathon',
+          registrationNumber: 'REG-2024-0001',
+          paymentAmount: 150000,
+          transactionId: 'TRANS-2024-0001',
+        })
       default:
         return { html: '', text: '' }
     }
@@ -64,16 +90,17 @@ export default function EmailPreviewPage() {
                 {[
                   { id: 'verification', label: 'Verification Email', icon: 'mdi:email-check' },
                   { id: 'welcome', label: 'Welcome Email', icon: 'mdi:party-popper' },
-                  { id: 'reset', label: 'Reset Password', icon: 'mdi:lock-reset' }
+                  { id: 'reset', label: 'Reset Password', icon: 'mdi:lock-reset' },
+                  { id: 'registration', label: 'Event Registration', icon: 'mdi:calendar-check' },
+                  { id: 'payment_success', label: 'Payment Success', icon: 'mdi:check-circle' }
                 ].map((type) => (
                   <button
                     key={type.id}
                     onClick={() => setSelectedEmail(type.id)}
-                    className={`w-full flex items-center p-3 rounded-lg transition-colors ${
-                      selectedEmail === type.id
+                    className={`w-full flex items-center p-3 rounded-lg transition-colors ${selectedEmail === type.id
                         ? 'bg-primary text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
+                      }`}
                   >
                     <Icon icon={type.icon} className="w-5 h-5 mr-3" />
                     <span className="font-medium">{type.label}</span>
@@ -94,11 +121,10 @@ export default function EmailPreviewPage() {
                   <button
                     key={mode.id}
                     onClick={() => setPreviewMode(mode.id)}
-                    className={`w-full flex items-center p-3 rounded-lg transition-colors ${
-                      previewMode === mode.id
+                    className={`w-full flex items-center p-3 rounded-lg transition-colors ${previewMode === mode.id
                         ? 'bg-primary text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
+                      }`}
                   >
                     <Icon icon={mode.icon} className="w-5 h-5 mr-3" />
                     <span className="font-medium">{mode.label}</span>
@@ -118,7 +144,7 @@ export default function EmailPreviewPage() {
                   <input
                     type="text"
                     value={formData.fullName}
-                    onChange={(e) => setFormData({...formData, fullName: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   />
                 </div>
@@ -129,7 +155,7 @@ export default function EmailPreviewPage() {
                   <input
                     type="email"
                     value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   />
                 </div>
@@ -140,7 +166,7 @@ export default function EmailPreviewPage() {
                   <input
                     type="text"
                     value={formData.verificationToken}
-                    onChange={(e) => setFormData({...formData, verificationToken: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, verificationToken: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md font-mono text-sm"
                   />
                 </div>
@@ -151,7 +177,7 @@ export default function EmailPreviewPage() {
                   <input
                     type="text"
                     value={formData.resetToken}
-                    onChange={(e) => setFormData({...formData, resetToken: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, resetToken: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md font-mono text-sm"
                   />
                 </div>
@@ -217,6 +243,8 @@ export default function EmailPreviewPage() {
                     {selectedEmail === 'verification' && 'Sent when user registers'}
                     {selectedEmail === 'welcome' && 'Sent after email verification'}
                     {selectedEmail === 'reset' && 'Sent when user requests password reset'}
+                    {selectedEmail === 'registration' && 'Sent when user registers for an event'}
+                    {selectedEmail === 'payment_success' && 'Sent when user successfully pays for an event'}
                   </p>
                 </div>
                 <div className="flex items-center space-x-4">
@@ -243,10 +271,9 @@ export default function EmailPreviewPage() {
                     </pre>
                   </div>
                 ) : (
-                  <div 
-                    className={`bg-white rounded-lg shadow-inner overflow-auto ${
-                      previewMode === 'desktop' ? 'w-full max-w-[600px]' : 'w-[375px]'
-                    }`}
+                  <div
+                    className={`bg-white rounded-lg shadow-inner overflow-auto ${previewMode === 'desktop' ? 'w-full max-w-[600px]' : 'w-[375px]'
+                      }`}
                   >
                     <div dangerouslySetInnerHTML={{ __html: emailContent.html }} />
                   </div>
@@ -261,6 +288,8 @@ export default function EmailPreviewPage() {
                     {selectedEmail === 'verification' && 'Verifikasi Email Anda'}
                     {selectedEmail === 'welcome' && `Selamat Datang di ${process.env.APP_NAME || 'Runminders'}!`}
                     {selectedEmail === 'reset' && `Reset Password - ${process.env.APP_NAME || 'Runminders'}`}
+                    {selectedEmail === 'registration' && `Konfirmasi Registrasi Event - ${process.env.APP_NAME || 'Runminders'}`}
+                    {selectedEmail === 'payment_success' && `Pembayaran Berhasil - ${process.env.APP_NAME || 'Runminders'}`}
                   </div>
                   <div className="flex items-center space-x-2">
                     <span className="text-sm text-gray-500">
