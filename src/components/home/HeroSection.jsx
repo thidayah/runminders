@@ -95,23 +95,23 @@ const promoSlides = [
   }
 ]
 
- const handleSmoothScroll = (href) => {
-    const targetId = href.substring(1)
-    const targetElement = document.getElementById(targetId)
-    
-    if (targetElement) {
-      const headerHeight = 50 // Height of sticky header
-      const targetPosition = targetElement.offsetTop - headerHeight
-      
-      window.scrollTo({
-        top: targetPosition,
-        behavior: 'smooth'
-      })
-    }
-    
-    // Close mobile menu after click
-    // setIsMenuOpen(false)
+const handleSmoothScroll = (href) => {
+  const targetId = href.substring(1)
+  const targetElement = document.getElementById(targetId)
+
+  if (targetElement) {
+    const headerHeight = 50 // Height of sticky header
+    const targetPosition = targetElement.offsetTop - headerHeight
+
+    window.scrollTo({
+      top: targetPosition,
+      behavior: 'smooth'
+    })
   }
+
+  // Close mobile menu after click
+  // setIsMenuOpen(false)
+}
 
 export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -148,45 +148,48 @@ export default function HeroSection() {
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-1 gap-12 items-center">
           {/* Left Content */}
-          <div className="text-center lg:text-left">
+          <div className="text-center lg:text-center">
             {/* <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 mb-6 border border-white/20">
               <span className="w-2 h-2 bg-accent rounded-full animate-ping"></span>
               <span className="text-white/90 text-sm font-medium">Platform Event Lari Terbaru di Indonesia</span>
             </div> */}
 
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-              Temukan
-              <span className="text-accent block">Passion Berlari</span>
-              Bersama Kami
+              Temukan Passion
+              <span className=" block">Berlari<span className="text-accent"> Bersama Kami</span> </span>
             </h1>
 
-            <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed max-w-2xl">
-              Dari pemula yang baru memulai perjalanan lari hingga atlet marathon berpengalaman.
-              Bergabunglah dengan <span className="text-accent font-semibold">10.000+ pelari</span> dalam
-              petualangan tak terlupakan menuju finish line impianmu.
-            </p>
+            <div className=" flex justify-center">
+              <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed max-w-5xl">
+                Dari pemula yang baru memulai perjalanan lari hingga atlet marathon berpengalaman.
+                Bergabunglah dengan <span className="text-accent font-semibold">100+ pelari</span> dalam
+                petualangan tak terlupakan menuju finish line impianmu.
+              </p>
+            </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-center">
               <Link href={'/events'} className=" font-medium bg-white py-2 px-5 rounded-full border border-white hover:bg-transparent hover:text-white cursor-pointer transition">
                 Jelajahi Events
               </Link>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-8 mt-12 max-w-md mx-auto lg:mx-0">
-              <div className="text-center">
-                <div className="text-2xl md:text-3xl font-bold text-white mb-1">100+</div>
-                <div className="text-white/70 text-sm">Event Aktif</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl md:text-3xl font-bold text-white mb-1">10K+</div>
-                <div className="text-white/70 text-sm">Pelari Bergabung</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl md:text-3xl font-bold text-white mb-1">15+</div>
-                <div className="text-white/70 text-sm">Kota di Indonesia</div>
+            <div className=" flex justify-center">
+              <div className="grid grid-cols-3 gap-8 mt-12 max-w-md mx-auto lg:mx-0">
+                <div className="text-center">
+                  <div className="text-2xl md:text-3xl font-bold text-white mb-1">10+</div>
+                  <div className="text-white/70 text-sm">Event Aktif</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl md:text-3xl font-bold text-white mb-1">100+</div>
+                  <div className="text-white/70 text-sm">Pelari Bergabung</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl md:text-3xl font-bold text-white mb-1">5+</div>
+                  <div className="text-white/70 text-sm">Kota di Indonesia</div>
+                </div>
               </div>
             </div>
           </div>
