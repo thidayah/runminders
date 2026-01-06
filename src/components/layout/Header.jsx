@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import Button from '@/components/ui/Button'
 import { useAuth } from '@/hooks/useAuth'
 import { Icon } from '@iconify/react'
+import { signOut } from "next-auth/react"
 
 const navigation = [
   { name: 'Beranda', href: '#home' },
@@ -152,10 +153,15 @@ export default function Header() {
     }
   }
 
-  const handleLogout = () => {
+  const handleLogout = () => {    
     logout()
     setIsDropdownOpen(false)
     setIsMenuOpen(false)
+    if (user.provider_id) {
+      signOut()
+    }else{
+      router.push('/login')
+    }
   }
 
   // User dropdown menu items

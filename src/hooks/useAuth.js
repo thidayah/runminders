@@ -56,7 +56,7 @@ export function useAuth() {
       isLoading: false
     })
     // Optionally redirect to login
-    window.location.href = '/login'
+    // window.location.href = '/login'
   }
 
   return {
