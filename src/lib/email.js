@@ -2,6 +2,8 @@ import { Resend } from 'resend';
 import { VerificationEmail } from '@/components/emails/VerificationEmail';
 import { WelcomeEmail } from '@/components/emails/WelcomeEmail';
 import { ResetPasswordEmail } from '@/components/emails/ResetPasswordEmail';
+import { EventRegistrationEmail } from "@/components/emails/EventRegistrationEmail";
+import { PaymentSuccessEmail } from '@/components/emails/PaymentSuccessEmail';
 
 // Initialize Resend
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -96,6 +98,98 @@ export async function sendPasswordResetEmail(toEmail, resetToken, fullName) {
     
   } catch (error) {
     console.error('Error sending reset password email:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function sendEventRegistrationEmail({
+  toEmail,
+  fullName,
+  eventTitle,
+  eventDate,
+  categoryName,
+  registrationNumber,
+  paymentAmount,
+  snapTransaction,
+  isFree = false
+}) {
+  try {
+    const emailContent = EventRegistrationEmail({
+      fullName,
+      eventTitle,
+      eventDate,
+      categoryName,
+      registrationNumber,
+      paymentAmount,
+      snapTransaction,
+      isFree
+    });
+
+    const subject = isFree 
+      ? `Registrasi Berhasil - ${eventTitle}`
+      : `Konfirmasi Registrasi - ${eventTitle}`;
+
+    const { data, error } = await resend.emails.send({
+      from: `${process.env.EMAIL_FROM_NAME} <${process.env.EMAIL_FROM_EMAIL}>`,
+      // to: [toEmail],
+      to: ['muhamadt84@gmail.com'], // For testing
+      subject: subject,
+      html: emailContent.html,
+      text: emailContent.text
+    });
+
+    if (error) {
+      console.error('Resend event registration email error:', error);
+      return { success: false, error: error.message };
+    }
+
+    console.log('Event registration email sent via Resend:', data);
+    return { success: true, data };
+    
+  } catch (error) {
+    console.error('Error sending event registration email:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function sendPaymentSuccessEmail({
+  toEmail,
+  fullName,
+  eventTitle,
+  eventDate,
+  categoryName,
+  registrationNumber,
+  paymentAmount
+}) {
+  try {
+    const emailContent = PaymentSuccessEmail({
+      fullName,
+      eventTitle,
+      eventDate,
+      categoryName,
+      registrationNumber,
+      paymentAmount
+    });
+
+    const { data, error } = await resend.emails.send({
+      from: `${process.env.EMAIL_FROM_NAME} <${process.env.EMAIL_FROM_EMAIL}>`,
+      // to: [toEmail],
+      to: ['muhamadt84@gmail.com'], // For testing
+      subject: `Pembayaran Berhasil - ${eventTitle}`,
+      html: emailContent.html,
+      text: emailContent.text
+    });
+
+    if (error) {
+      console.error('Resend payment success email error:', error);
+      return { success: false, error: error.message };
+    }
+
+    console.log('Payment success email sent via Resend:', data);
+    return { success: true, data };
+    
+  } catch (error) {
+    console.error('Error sending payment success email:', error);
     return { success: false, error: error.message };
   }
 }

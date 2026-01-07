@@ -32,9 +32,9 @@ export const createSnapTransaction = async (params) => {
       },
       item_details: params.item_details,
       callbacks: {
-        finish: `${process.env.NEXT_PUBLIC_APP_URL}/registration/success`,
-        error: `${process.env.NEXT_PUBLIC_APP_URL}/registration/failed`,
-        pending: `${process.env.NEXT_PUBLIC_APP_URL}/registration/pending`,
+        finish: `${process.env.NEXT_PUBLIC_APP_URL}/payment/success`,
+        error: `${process.env.NEXT_PUBLIC_APP_URL}/payment/failed`,
+        pending: `${process.env.NEXT_PUBLIC_APP_URL}/payment/pending`,
       },
       expiry: {
         unit: 'hours',
