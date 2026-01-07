@@ -18,17 +18,17 @@ export function WelcomeEmail({ fullName, toEmail }) {
       <h3 style="color: #333333; margin-bottom: 15px;">Mulai jelajahi fitur-fitur kami:</h3>
       
       <div style="background: #f8f9fa; padding: 15px; margin: 10px 0; border-left: 4px solid #f0c311;">
-        <strong style="color: #333333;">📱 Lengkapi Profil</strong>
+        <strong style="color: #333333;">Lengkapi Profil</strong>
         <p style="margin: 5px 0 0 0; color: #666666; font-size: 14px;">Lengkapi informasi profil Anda untuk pengalaman yang lebih personal.</p>
       </div>
       
       <div style="background: #f8f9fa; padding: 15px; margin: 10px 0; border-left: 4px solid #f0c311;">
-        <strong style="color: #333333;">🚀 Mulai Menggunakan</strong>
+        <strong style="color: #333333;">Mulai Menggunakan</strong>
         <p style="margin: 5px 0 0 0; color: #666666; font-size: 14px;">Akses semua fitur yang tersedia untuk Anda.</p>
       </div>
       
       <div style="background: #f8f9fa; padding: 15px; margin: 10px 0; border-left: 4px solid #f0c311;">
-        <strong style="color: #333333;">🔒 Keamanan Akun</strong>
+        <strong style="color: #333333;">Keamanan Akun</strong>
         <p style="margin: 5px 0 0 0; color: #666666; font-size: 14px;">Pastikan keamanan akun Anda dengan mengatur password yang kuat.</p>
       </div>
     </div>
