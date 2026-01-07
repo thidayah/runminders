@@ -21,11 +21,11 @@ export default function AboutSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Image dengan gambar asli */}
           <div className="relative">
-            <div className="rounded-xl overflow-hidden shadow-2xl">
+            <div className="rounded-tl-4xl overflow-hidden shadow-2xl">
               <img 
-                src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=600&h=400" 
-                alt="Komunitas Pelari RUNminders"
-                className="w-full h-auto object-cover"
+                src="https://images.unsplash.com/photo-1744868646521-2620c945a1fe?w=600&h=400"
+                alt="Komunitas Pelari Runminders"
+                className="w-full h-auto max-h-[400px] object-cover"
               />
             </div>
             
@@ -53,12 +53,11 @@ export default function AboutSection() {
             </div> */}
 
             <h2 className="text-3xl md:text-4xl font-bold text-neutral-800 mb-6">
-              Revolusi Pengalaman 
-              <span className="text-primary block">Lari Anda</span>
+              Revolusi Pengalaman Lari Anda
             </h2>
             
             <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-              RUNminders hadir sebagai solusi lengkap untuk para pelari Indonesia. 
+              Runminders hadir sebagai solusi lengkap untuk para pelari Indonesia. 
               Dari menemukan event yang tepat, pendaftaran yang mudah, hingga menjadi bagian 
               dari komunitas yang saling mendukung. Kami membangun ekosistem lari yang 
               <span className="text-primary font-semibold"> inklusif dan modern</span>.
