@@ -406,18 +406,6 @@ export async function POST(request) {
     }
     console.log(extractValidEmbedSrc(data.location_link));
 
-
-    // Response sukses
-    return NextResponse.json({
-      success: true,
-      message: 'Event berhasil dibuat!',
-      data: {
-        event: eventData,
-        // categories: categories,
-        // total_categories: categories.length
-      }
-    }, { status: 201 })
-
     // Insert event ke database
     const { data: event, error: eventError } = await supabaseServer
       .from('events')
