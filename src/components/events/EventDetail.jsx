@@ -4,13 +4,13 @@ import { Icon } from '@iconify/react'
 import EventHeader from './EventHeader'
 import EventInfo from './EventInfo'
 import EventRegistration from './EventRegistration'
-import EventGallery from './EventGallery'
+// import EventGallery from './EventGallery'
 import EventMap from './EventMap'
-import EventReviews from './EventReviews'
-import RelatedEvents from './RelatedEvents'
+// import EventReviews from './EventReviews'
+// import RelatedEvents from './RelatedEvents'
 
 export default function EventDetail({ event }) {
-  const [activeTab, setActiveTab] = useState('info')
+  const [activeTab, setActiveTab] = useState('info') 
 
   const tabs = [
     {
@@ -23,16 +23,16 @@ export default function EventDetail({ event }) {
       name: 'Lokasi',
       icon: <Icon icon="mdi:map-marker-outline" width="20" height="20" />
     },
-    {
-      id: 'gallery',
-      name: 'Galeri',
-      icon: <Icon icon="mdi:image-multiple" width="20" height="20" />
-    },
-    {
-      id: 'reviews',
-      name: 'Testimoni',
-      icon: <Icon icon="mdi:star-outline" width="20" height="20" />
-    }
+    // {
+    //   id: 'gallery',
+    //   name: 'Galeri',
+    //   icon: <Icon icon="mdi:image-multiple" width="20" height="20" />
+    // },
+    // {
+    //   id: 'reviews',
+    //   name: 'Testimoni',
+    //   icon: <Icon icon="mdi:star-outline" width="20" height="20" />
+    // }
   ]
 
   return (
@@ -66,9 +66,9 @@ export default function EventDetail({ event }) {
             {/* Tab Content */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
               {activeTab === 'info' && <EventInfo event={event} />}
-              {activeTab === 'gallery' && <EventGallery event={event} />}
               {activeTab === 'location' && <EventMap event={event} />}
-              {activeTab === 'reviews' && <EventReviews event={event} />}
+              {/* {activeTab === 'gallery' && <EventGallery event={event} />}
+              {activeTab === 'reviews' && <EventReviews event={event} />} */}
             </div>
           </div>
 
@@ -79,7 +79,7 @@ export default function EventDetail({ event }) {
         </div>
 
         {/* Related Events */}
-        <RelatedEvents currentEventId={event.id} />
+        {/* <RelatedEvents currentEventId={event.id} /> */}
       </div>
     </div>
   )
