@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 
 const SALT_ROUNDS = 12;
 
@@ -35,3 +36,12 @@ export function isStrongPassword(password) {
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*()_+-=,./;']{8,}$/; //@$!%*?&  
   return passwordRegex.test(password);
 }
+
+// Validate jwt token
+export function verifyToken(token) {
+  try {
+    return jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+  } catch (error) {
+    return null;
+  }
+};

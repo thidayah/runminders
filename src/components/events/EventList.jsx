@@ -1,56 +1,47 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Icon } from '@iconify/react'
 import EventFilters from './EventFilters'
 import EventSort from './EventSort'
 import EventGrid from './EventGrid'
+import Button from '@/components/ui/Button'
 
-export default function EventList({ events, loading }) {    
-  const [filteredEvents, setFilteredEvents] = useState([])  
+export default function EventList({
+  events,
+  loading,
+  loadingMore,
+  error,
+  pagination,
+  onLoadMore,
+  filters,
+  onFilterChange
+}) {
   const [showFilters, setShowFilters] = useState(false)
-  const [viewMode, setViewMode] = useState('grid') // 'grid' or 'list'
-
-  useEffect(() => {
-    setFilteredEvents(events)
-  }, [events])
+  const [viewMode, setViewMode] = useState('grid')
 
   const filterOptions = {
-    categories: ['Marathon', 'Trail', 'Virtual', 'Charity', 'Fun Run'],
-    locations: ['Jakarta', 'Surabaya', 'Bali', 'Bandung', 'Yogyakarta', 'Online'],
-    difficulties: ['Beginner', 'Intermediate', 'Expert'],
-    priceRange: { min: 0, max: 500000 }
+    categories: ['Marathon', 'Fun Run', 'Trail', 'Charity', 'Virtual'],
+    locations: ['Jakarta', 'Bandung', 'Online'],
+    priceRange: { min: 0, max: 1000000 }
   }
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-        <div className="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-200">
-          <div className="text-2xl md:text-3xl font-bold text-primary mb-2">{events.length}+</div>
-          <div className="text-gray-600">Event Aktif</div>
+      {/* Error Message */}
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-600 text-center">{error}</p>
         </div>
-        <div className="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-200">
-          <div className="text-2xl md:text-3xl font-bold text-primary mb-2">25+</div>
-          <div className="text-gray-600">Kota</div>
-        </div>
-        <div className="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-200">
-          <div className="text-2xl md:text-3xl font-bold text-primary mb-2">10K+</div>
-          <div className="text-gray-600">Peserta</div>
-        </div>
-        <div className="bg-white rounded-2xl p-6 text-center shadow-sm border border-gray-200">
-          <div className="text-2xl md:text-3xl font-bold text-primary mb-2">50+</div>
-          <div className="text-gray-600">Penyelenggara</div>
-        </div>
-      </div>
+      )}
 
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Filters Sidebar - Desktop */}
         <div className="hidden lg:block w-80 flex-shrink-0">
-          <EventFilters 
+          <EventFilters
             options={filterOptions}
-            onFilterChange={setFilteredEvents}
-            events={events}
+            onFilterChange={onFilterChange}
+            currentFilters={filters}
           />
         </div>
 
@@ -61,8 +52,8 @@ export default function EventList({ events, loading }) {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               {/* Results Count */}
               <div className="text-gray-600">
-                Menampilkan <span className="font-semibold text-primary">{filteredEvents.length}</span> dari{' '}
-                <span className="font-semibold">{events.length}</span> event
+                Menampilkan <span className="font-semibold text-primary">{events.length}</span> dari{' '}
+                <span className="font-semibold">{pagination.totalItems}</span> event
               </div>
 
               <div className="flex items-center gap-4">
@@ -83,7 +74,11 @@ export default function EventList({ events, loading }) {
                 </div>
 
                 {/* Sort */}
-                <EventSort onSortChange={setFilteredEvents} events={filteredEvents} />
+                <EventSort 
+                  onSortChange={onFilterChange}
+                  currentSort={filters.sort_by}
+                  currentSortOrder={filters.sort_order}
+                />
 
                 {/* Mobile Filter Button */}
                 <button
@@ -98,11 +93,35 @@ export default function EventList({ events, loading }) {
           </div>
 
           {/* Events Grid/List */}
-          <EventGrid 
-            events={filteredEvents} 
+          <EventGrid
+            events={events}
             loading={loading}
             viewMode={viewMode}
           />
+
+          {/* Load More Button */}
+          {pagination.hasNextPage && events.length > 0 && (
+            <div className="text-center mt-12 mb-8">
+              <Button
+                onClick={onLoadMore}
+                loading={loadingMore}
+                variant="outline"
+                className="min-w-[200px]"
+              >
+                {loadingMore ? (
+                  <>
+                    <Icon icon="mdi:loading" className="animate-spin mr-2" />
+                    Memuat...
+                  </>
+                ) : (
+                  'Muat Lebih Banyak'
+                )}
+              </Button>
+              <p className="text-gray-500 text-sm mt-2">
+                Menampilkan {events.length} dari {pagination.totalItems} event
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -120,10 +139,10 @@ export default function EventList({ events, loading }) {
                   <Icon icon="mdi:close" width="24" height="24" />
                 </button>
               </div>
-              <EventFilters 
+              <EventFilters
                 options={filterOptions}
-                onFilterChange={setFilteredEvents}
-                events={events}
+                onFilterChange={onFilterChange}
+                currentFilters={filters}
               />
             </div>
           </div>
