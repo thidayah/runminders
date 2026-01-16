@@ -187,7 +187,7 @@ export default function Header() {
     //   href: '/settings',
     // },
     {
-      label: 'Logout',
+      label: 'Keluar',
       icon: 'mdi:logout',
       className: 'text-red-600 hover:bg-red-50'
     }
@@ -259,10 +259,10 @@ export default function Header() {
                       )}
                     </div>
                     <div className="text-left">
-                      <p className={`text-sm font-medium truncate max-w-[120px] ${getTextColor()}`}>
+                      <p className={`text-sm font-medium truncate max-w-[75px] ${getTextColor()}`}>
                         {user?.full_name || user?.email?.split('@')[0] || 'User'}
                       </p>
-                      <p className={`text-xs ${getTextColor() === 'text-white' ? 'text-white/70' : 'text-gray-500'}`}>
+                      <p className={`text-xs capitalize ${getTextColor() === 'text-white' ? 'text-white/70' : 'text-gray-500'}`}>
                         {user?.role || 'Member'}
                       </p>
                     </div>
@@ -299,7 +299,7 @@ export default function Header() {
                       <button
                         key={index}
                         onClick={() => {
-                          if (item.label === 'Logout') {
+                          if (item.label === 'Keluar') {
                             return handleLogout()
                           } else {
                             router.push(item.href)
@@ -405,7 +405,7 @@ export default function Header() {
                     <button
                       key={index}
                       onClick={() => {
-                        if (item.label === 'Logout') {
+                        if (item.label === 'Keluar') {
                           return handleLogout()
                         } else {
                           router.push(item.href)
