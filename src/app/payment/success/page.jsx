@@ -1,17 +1,19 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { use, useEffect, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Layout from "@/components/layout/Layout"
 import Button from "@/components/ui/Button"
 import Link from "next/link"
 import { Icon } from "@iconify/react"
 
-export default function PaymentSuccessPage() {
+export default function PaymentSuccessPage({ searchParams }) {
   const router = useRouter()
   const [countdown, setCountdown] = useState(30)
-  const searchParams = useSearchParams()
-  const orderId = searchParams.get('order_id')
+  // const searchParams = useSearchParams()
+  // const orderId = searchParams.get('order_id')
+  const params = use(searchParams) 
+  const orderId = params.order_id
 
   // Auto redirect setelah 30 detik
   useEffect(() => {

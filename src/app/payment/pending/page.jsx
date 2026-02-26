@@ -1,19 +1,22 @@
-'use client'
+'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation'
-import Layout from "@/components/layout/Layout"
-import Button from "@/components/ui/Button"
-import Link from "next/link"
-import { Icon } from "@iconify/react"
+import { useRouter, useSearchParams } from 'next/navigation';
+import Layout from '@/components/layout/Layout';
+import Button from '@/components/ui/Button';
+import Link from 'next/link';
+import { Icon } from '@iconify/react';
+import { use } from 'react';
 
-export default function PaymentFailedPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const orderId = searchParams.get('order_id')
+export default function PaymentPendingPage({ searchParams }) {
+  const router = useRouter();
+  // const searchParams = useSearchParams()
+  // const orderId = searchParams.get('order_id')
+  const params = use(searchParams);
+  const orderId = params.order_id;
 
   const handleRedirectNow = () => {
-    router.push('/dashboard')
-  }
+    router.push('/dashboard');
+  };
 
   return (
     <Layout>
@@ -25,14 +28,10 @@ export default function PaymentFailedPage() {
           </div>
 
           {/* Title */}
-          <h1 className="text-2xl font-bold text-gray-800 mb-3">
-            Pembayaran Tertunda
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-800 mb-3">Pembayaran Tertunda</h1>
 
           {/* Message */}
-          <p className="text-gray-600 mb-8">
-            Terima kasih telah mendaftar. Mohon selesaikan pembayaran dalam waktu yang telah ditentukan.
-          </p>
+          <p className="text-gray-600 mb-8">Terima kasih telah mendaftar. Mohon selesaikan pembayaran dalam waktu yang telah ditentukan.</p>
 
           {orderId && (
             <div className="bg-gray-50 rounded-lg p-4 mb-4">
@@ -66,21 +65,11 @@ export default function PaymentFailedPage() {
               <Icon icon="mdi:information" className="w-5 h-5 text-yellow-500 mt-0.5 flex-shrink-0" />
               <div>
                 <p className="text-sm font-medium text-yellow-800 mb-1">Tips</p>
-                <p className="text-sm text-yellow-700">
-                  • Silakan periksa kotak masuk email Anda untuk menyelesaikan proses pembayaran sebelum kedaluwarsa.
-                </p>
-                <p className="text-sm text-yellow-700">
-                  • Selesaikan pembayaran dalam waktu yang di tentukan untuk mengamankan pendaftaran Anda.
-                </p>
-                <p className="text-sm text-yellow-700">
-                  • Gunakan jumlah yang tepat seperti yang tertera saat pembayaran.
-                </p>
-                <p className="text-sm text-yellow-700">
-                  • Simpan struk transaksi Anda sebagai referensi.
-                </p>
-                <p className="text-sm text-yellow-700">
-                  • Hubungi bank Anda jika terjadi masalah transfer.
-                </p>
+                <p className="text-sm text-yellow-700">• Silakan periksa kotak masuk email Anda untuk menyelesaikan proses pembayaran sebelum kedaluwarsa.</p>
+                <p className="text-sm text-yellow-700">• Selesaikan pembayaran dalam waktu yang di tentukan untuk mengamankan pendaftaran Anda.</p>
+                <p className="text-sm text-yellow-700">• Gunakan jumlah yang tepat seperti yang tertera saat pembayaran.</p>
+                <p className="text-sm text-yellow-700">• Simpan struk transaksi Anda sebagai referensi.</p>
+                <p className="text-sm text-yellow-700">• Hubungi bank Anda jika terjadi masalah transfer.</p>
               </div>
             </div>
           </div>
@@ -88,28 +77,23 @@ export default function PaymentFailedPage() {
           {/* Buttons */}
           <div className="mt-8 pt-6 border-t border-gray-200">
             <div className="flex space-x-2 justify-center">
-              <Button
-                onClick={handleRedirectNow}
-                variant="primary"
-                size="md"
-              >
+              <Button onClick={handleRedirectNow} variant="primary" size="md">
                 <Icon icon="mdi:view-dashboard" className="mr-2" />
                 Ke Dashboard
               </Button>
 
               <Link href="/contact" className="block">
-                <Button variant="outline" size="md" >
+                <Button variant="outline" size="md">
                   <Icon icon="mdi:chat-question" className="mr-2" />
                   Butuh Bantuan?
                 </Button>
               </Link>
             </div>
           </div>
-
         </div>
       </div>
     </Layout>
-  )
+  );
 }
 
 // 'use client'
@@ -131,16 +115,16 @@ export default function PaymentFailedPage() {
 
 //   const checkPaymentStatus = async () => {
 //     if (!orderId) return
-    
+
 //     setCheckingStatus(true)
 //     try {
 //       // Polling ke API untuk cek status
 //       const response = await fetch(`/api/payments/status/${orderId}`)
 //       const result = await response.json()
-      
+
 //       if (result.success) {
 //         const status = result.data.transaction_status
-        
+
 //         if (status === 'settlement') {
 //           // Redirect ke success page
 //           router.push(`/registration/success?order_id=${orderId}`)
@@ -159,10 +143,10 @@ export default function PaymentFailedPage() {
 //   useEffect(() => {
 //     // Auto check status setiap 10 detik
 //     const interval = setInterval(checkPaymentStatus, 10000)
-    
+
 //     // Check immediately
 //     checkPaymentStatus()
-    
+
 //     return () => clearInterval(interval)
 //   }, [orderId])
 
@@ -269,9 +253,9 @@ export default function PaymentFailedPage() {
 //                 {/* Actions */}
 //                 <div className="space-y-4">
 //                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-//                     <Button 
-//                       variant="outline" 
-//                       size="lg" 
+//                     <Button
+//                       variant="outline"
+//                       size="lg"
 //                       fullWidth
 //                       onClick={checkPaymentStatus}
 //                       loading={checkingStatus}
@@ -279,7 +263,7 @@ export default function PaymentFailedPage() {
 //                       <Icon icon="mdi:refresh" className="mr-2" />
 //                       Periksa Status
 //                     </Button>
-                    
+
 //                     <Link href="/contact" className="w-full">
 //                       <Button variant="outline" size="lg" fullWidth>
 //                         <Icon icon="mdi:chat-question" className="mr-2" />
@@ -287,7 +271,7 @@ export default function PaymentFailedPage() {
 //                       </Button>
 //                     </Link>
 //                   </div>
-                  
+
 //                   <Link href="/dashboard" className="block">
 //                     <Button variant="primary" size="lg" fullWidth>
 //                       <Icon icon="mdi:home" className="mr-2" />
@@ -313,7 +297,7 @@ export default function PaymentFailedPage() {
 //                 <div>
 //                   <p className="font-medium text-amber-800 mb-1">Penting!</p>
 //                   <p className="text-sm text-amber-700">
-//                     Jangan tutup halaman ini selama proses verifikasi berlangsung. 
+//                     Jangan tutup halaman ini selama proses verifikasi berlangsung.
 //                     Jika Anda keluar, Anda dapat kembali ke halaman ini melalui email konfirmasi.
 //                   </p>
 //                 </div>
