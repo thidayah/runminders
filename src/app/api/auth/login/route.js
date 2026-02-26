@@ -1,4 +1,3 @@
-// File: app/api/auth/login/simple/route.js
 import { NextResponse } from 'next/server';
 import { supabaseServer } from "@/lib/supabase";
 import bcrypt from 'bcryptjs';
@@ -123,10 +122,12 @@ export async function POST(request) {
         role: member.role,
         is_email_verified: member.is_email_verified,
         avatar_url: member.avatar_url,
-        phone_number: member.phone_number
+        phone_number: member.phone_number,
+        created_at: member.created_at,
+        last_login: new Date().toISOString()
       },
       token: token,
-      last_login: new Date().toISOString()
+      // last_login: new Date().toISOString()
     };
 
     return NextResponse.json({
