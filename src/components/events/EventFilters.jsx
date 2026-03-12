@@ -1,17 +1,31 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Icon } from '@iconify/react'
 
-export default function EventFilters({ options, onFilterChange, events }) {
+export default function EventFilters({ options, onFilterChange, currentFilters }) {
   const [filters, setFilters] = useState({
-    categories: [],
-    locations: [],
-    difficulties: [],
-    priceRange: options.priceRange,
-    dateRange: '',
-    search: ''
+    categories: currentFilters.categories || [],
+    locations: currentFilters.locations || [],
+    priceRange: {
+      min: currentFilters.min_price ? parseInt(currentFilters.min_price) : options.priceRange.min,
+      max: currentFilters.max_price ? parseInt(currentFilters.max_price) : options.priceRange.max
+    },
+    search: currentFilters.search || ''
   })
+
+  // Update local state when parent filters change
+  useEffect(() => {
+    setFilters({
+      categories: currentFilters.categories || [],
+      locations: currentFilters.locations || [],
+      priceRange: {
+        min: currentFilters.min_price ? parseInt(currentFilters.min_price) : options.priceRange.min,
+        max: currentFilters.max_price ? parseInt(currentFilters.max_price) : options.priceRange.max
+      },
+      search: currentFilters.search || ''
+    })
+  }, [currentFilters, options.priceRange.min, options.priceRange.max])
 
   const handleFilterChange = (filterType, value) => {
     const newFilters = { ...filters }
@@ -31,49 +45,35 @@ export default function EventFilters({ options, onFilterChange, events }) {
   }
 
   const applyFilters = (filterSettings) => {
-    let filtered = events
-
-    // Category filter
-    if (filterSettings.categories.length > 0) {
-      filtered = filtered.filter(event => 
-        event.categories.some(cat => filterSettings.categories.includes(cat))
-      )
+    const apiFilters = {
+      search: filterSettings.search,
+      categories: filterSettings.categories,
+      locations: filterSettings.locations,
+      min_price: filterSettings.priceRange.min.toString(),
+      max_price: filterSettings.priceRange.max.toString()
     }
-
-    // Location filter
-    if (filterSettings.locations.length > 0) {
-      filtered = filtered.filter(event =>
-        filterSettings.locations.some(location => event.location.includes(location))
-      )
-    }
-
-    // Difficulty filter
-    if (filterSettings.difficulties.length > 0) {
-      filtered = filtered.filter(event =>
-        filterSettings.difficulties.includes(event.difficulty)
-      )
-    }
-
-    // Price filter
-    filtered = filtered.filter(event =>
-      event.price >= filterSettings.priceRange.min &&
-      event.price <= filterSettings.priceRange.max
-    )
-
-    onFilterChange(filtered)
+    
+    onFilterChange(apiFilters)
   }
 
   const clearFilters = () => {
     const resetFilters = {
       categories: [],
       locations: [],
-      difficulties: [],
       priceRange: options.priceRange,
-      dateRange: '',
       search: ''
     }
     setFilters(resetFilters)
-    onFilterChange(events)
+    
+    onFilterChange({
+      search: '',
+      categories: [],
+      locations: [],
+      min_price: '',
+      max_price: '',
+      sort_by: 'event_date',
+      sort_order: 'asc'
+    })
   }
 
   return (
@@ -104,7 +104,7 @@ export default function EventFilters({ options, onFilterChange, events }) {
           <input
             type="text"
             placeholder="Cari event..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:outline-0 focus:border-transparent"
             value={filters.search}
             onChange={(e) => handleFilterChange('search', e.target.value)}
           />
@@ -116,12 +116,12 @@ export default function EventFilters({ options, onFilterChange, events }) {
         <h4 className="font-medium text-gray-800 mb-3">Kategori</h4>
         <div className="space-y-2">
           {options.categories.map((category) => (
-            <label key={category} className="flex items-center">
+            <label key={category} className="flex items-center cursor-pointer">
               <input
                 type="checkbox"
                 checked={filters.categories.includes(category)}
                 onChange={() => handleFilterChange('categories', category)}
-                className="rounded border-gray-300 text-primary focus:ring-primary"
+                className="rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
               />
               <span className="ml-2 text-sm text-gray-700">{category}</span>
             </label>
@@ -134,32 +134,14 @@ export default function EventFilters({ options, onFilterChange, events }) {
         <h4 className="font-medium text-gray-800 mb-3">Lokasi</h4>
         <div className="space-y-2">
           {options.locations.map((location) => (
-            <label key={location} className="flex items-center">
+            <label key={location} className="flex items-center cursor-pointer">
               <input
                 type="checkbox"
                 checked={filters.locations.includes(location)}
                 onChange={() => handleFilterChange('locations', location)}
-                className="rounded border-gray-300 text-primary focus:ring-primary"
+                className="rounded border-gray-300 text-primary focus:ring-primary cursor-pointer"
               />
               <span className="ml-2 text-sm text-gray-700">{location}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Difficulty */}
-      <div>
-        <h4 className="font-medium text-gray-800 mb-3">Tingkat Kesulitan</h4>
-        <div className="space-y-2">
-          {options.difficulties.map((difficulty) => (
-            <label key={difficulty} className="flex items-center">
-              <input
-                type="checkbox"
-                checked={filters.difficulties.includes(difficulty)}
-                onChange={() => handleFilterChange('difficulties', difficulty)}
-                className="rounded border-gray-300 text-primary focus:ring-primary"
-              />
-              <span className="ml-2 text-sm text-gray-700">{difficulty}</span>
             </label>
           ))}
         </div>
@@ -173,8 +155,8 @@ export default function EventFilters({ options, onFilterChange, events }) {
         <input
           type="range"
           min="0"
-          max="500000"
-          step="50000"
+          max="1000000"
+          step="10000"
           value={filters.priceRange.max}
           onChange={(e) => handleFilterChange('priceRange', {
             ...filters.priceRange,
@@ -184,25 +166,9 @@ export default function EventFilters({ options, onFilterChange, events }) {
         />
         <div className="flex justify-between text-xs text-gray-500 mt-1">
           <span>Rp 0</span>
-          <span>Rp 500.000</span>
+          <span>Rp 1.000.000</span>
         </div>
       </div>
-
-      {/* Date Range */}
-      {/* <div>
-        <h4 className="font-medium text-gray-800 mb-3">Tanggal</h4>
-        <select
-          value={filters.dateRange}
-          onChange={(e) => handleFilterChange('dateRange', e.target.value)}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary focus:border-transparent"
-        >
-          <option value="">Semua Tanggal</option>
-          <option value="upcoming">Mendatang</option>
-          <option value="thisMonth">Bulan Ini</option>
-          <option value="nextMonth">Bulan Depan</option>
-          <option value="thisYear">Tahun Ini</option>
-        </select>
-      </div> */}
     </div>
   )
 }

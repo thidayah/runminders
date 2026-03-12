@@ -3,6 +3,7 @@ export default function Button({
   variant = 'primary', 
   size = 'md', 
   fullWidth = false,
+  className = '',
   ...props 
 }) {
   const baseClasses = 'inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 cursor-pointer'
@@ -23,7 +24,7 @@ export default function Button({
   
   const widthClass = fullWidth ? 'w-full' : ''
   
-  const classes = `${baseClasses} ${variants[variant]} ${sizes[size]} ${widthClass}`
+  const classes = `${baseClasses} ${variants[variant]} ${sizes[size]} ${widthClass} ${className}`.trim()
   
   return (
     <button className={classes} {...props}>

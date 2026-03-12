@@ -13,7 +13,7 @@ export default function Home() {
       <AboutSection />
       <EventsSection />
       {/* <CategoryFilter /> */}
-      <PartnersSection />
+      {/* <PartnersSection /> */}
       <ReviewsSection />
     </Layout>
   )

@@ -9,7 +9,7 @@ export default function EventGallery({ event }) {
   // Sample gallery data - bisa dari event.gallery
   const galleryImages = event.gallery || [
     "https://images.unsplash.com/photo-1486218119243-13883505764c?w=800&h=600&fit=crop",
-    "https://images.unsplash.com/photo-1544830751-9c4cdf187e4c?w=800&h=600&fit=crop",
+    "https://images.unsplash.com/photo-1540539234-c14a20fb7c7b?w=1200&h=600&fit=crop",
     "https://images.unsplash.com/photo-1571008887538-b36bb32f4571?w=800&h=600&fit=crop",
     "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=800&h=600&fit=crop",
     "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=800&h=600&fit=crop",

@@ -9,7 +9,7 @@ const reviews = [
     role: 'Pelari Marathon',
     avatar: '/avatars/andi.jpg',
     rating: 5,
-    comment: 'Platform yang sangat membantu! Dari registrasi sampai pembayaran semuanya mudah dan cepat. Sudah 5 event saya ikuti melalui RUNminders.',
+    comment: 'Platform yang sangat membantu! Dari registrasi sampai pembayaran semuanya mudah dan cepat. Sudah 5 event saya ikuti melalui Runminders.',
     event: 'Jakarta Marathon 2024'
   },
   {
@@ -36,7 +36,7 @@ const reviews = [
     role: 'Pelari Trail',
     avatar: '/avatars/maya.jpg',
     rating: 5,
-    comment: 'Komunitasnya sangat aktif dan supportive. Saya menemukan banyak teman lari dan event trail yang seru melalui RUNminders.',
+    comment: 'Komunitasnya sangat aktif dan supportive. Saya menemukan banyak teman lari dan event trail yang seru melalui Runminders.',
     event: 'Bali Trail Challenge'
   }
 ]
@@ -67,7 +67,7 @@ export default function ReviewsSection() {
             Kata Mereka
           </h2>
           <p className="text-lg text-gray-600 max-w-xl mx-auto">
-            Dengarkan pengalaman langsung dari pelari yang telah mengikuti berbagai event di RUNminders
+            Dengarkan pengalaman langsung dari pelari yang telah mengikuti berbagai event di Runminders
           </p>
         </div>
 

@@ -4,7 +4,7 @@ export default function AuthLayout({ children, title, subtitle }) {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Left Side - Form */}
-      <div className="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-24">
+      <div className="flex-1 flex flex-col justify-center py-12 pt-24 px-4 sm:px-6 lg:px-20 xl:px-24">
         <div className="mx-auto w-full max-w-sm lg:max-w-md">
           {/* Logo */}
           {/* <div className="text-center mb-8">
@@ -25,17 +25,6 @@ export default function AuthLayout({ children, title, subtitle }) {
 
             {children}
           </div>
-
-          {/* Back to Home */}
-          {/* <div className="text-center mt-8">
-            <Link 
-              href={'/'}
-              className="text-gray-600 hover:text-accent transition-colors duration-200 flex items-center justify-center gap-2 mx-auto"
-            >
-              <span>←</span>
-              Kembali ke Beranda
-            </Link>
-          </div> */}
         </div>
       </div>
 
@@ -44,22 +33,22 @@ export default function AuthLayout({ children, title, subtitle }) {
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: 'url(https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=800&h=1000&fit=crop)'
+            backgroundImage: 'url(https://images.unsplash.com/photo-1519703936-c4a3b3eb88e4?w=800&h=1000&fit=crop)'
           }}
         >
           {/* Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-white via-neutral/95 to-primary"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-white via-neutral/90 to-primary"></div>
           
           {/* Content */}
           <div className="relative z-10 h-full flex items-center justify-center p-12">
             <div className="text-white text-center max-w-lg">
               <h3 className="text-4xl font-bold mb-4">Bergabung dengan Platform Event Lari Terbaru</h3>
               <p className="text-xl opacity-90">
-                Temukan event seru, capai target personal, dan jelajahi pengalaman lari terbaik bersama <span className=" font-bold text-accent">RUNminders</span>
+                Temukan event seru, capai target personal, dan jelajahi pengalaman lari terbaik bersama <span className=" font-bold text-accent">Runminders</span>
               </p>
               
               {/* Stats */}
-              <div className="grid grid-cols-3 gap-6 mt-8">
+              {/* <div className="grid grid-cols-3 gap-6 mt-8">
                 <div>
                   <div className="text-2xl font-bold">10K+</div>
                   <div className="text-sm opacity-80">Pelari</div>
@@ -72,7 +61,7 @@ export default function AuthLayout({ children, title, subtitle }) {
                   <div className="text-2xl font-bold">15+</div>
                   <div className="text-sm opacity-80">Kota</div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
