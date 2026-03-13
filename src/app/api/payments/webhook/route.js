@@ -143,8 +143,10 @@ export async function POST(request) {
             return NextResponse.json({
               success: true,
               message: 'Webhook forwarded to RITW app',
-              forwarded: true,
-              target: 'RITW'
+              data: {
+                forwarded: true,
+                target: 'RITW'
+              }
             });
           } else {
             console.error('Failed to forward RITW webhook:', forwardResult.error);
@@ -171,8 +173,10 @@ export async function POST(request) {
             return NextResponse.json({
               success: true,
               message: 'Webhook forwarded to SYD app',
-              forwarded: true,
-              target: 'SYD'
+              data: {
+                forwarded: true,
+                target: 'SYD'
+              }
             });
           } else {
             console.error('Failed to forward SYD webhook:', forwardResult.error);
