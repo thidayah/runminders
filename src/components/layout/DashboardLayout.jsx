@@ -8,7 +8,8 @@ import { useAuth } from '@/hooks/useAuth'
 import Header from './Header'
 import Footer from './Footer'
 
-const dashboardMenu = [
+// Menu untuk user biasa (member)
+const memberMenu = [
   {
     title: 'Dashboard',
     href: '/dashboard',
@@ -29,12 +30,43 @@ const dashboardMenu = [
   }
 ]
 
+// Menu untuk admin
+const adminMenu = [
+  {
+    title: 'Dashboard',
+    href: '/dashboard/admin',
+    icon: 'mdi:view-dashboard',
+    exact: true
+  },
+  {
+    title: 'Profil',
+    href: '/dashboard/admin/profile',
+    icon: 'mdi:account',
+    exact: false
+  },
+  {
+    title: 'Event',
+    href: '/dashboard/admin/events',
+    icon: 'mdi:calendar-star',
+    exact: false
+  },
+  {
+    title: 'Partner',
+    href: '/dashboard/admin/partners',
+    icon: 'mdi:handshake',
+    exact: false
+  }
+]
+
 export default function DashboardLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
   const { user, isLoading, logout } = useAuth()
+  
+  // Tentukan menu berdasarkan role
+  const dashboardMenu = user?.role === 'admin' ? adminMenu : memberMenu
 
   // Check if mobile
   useEffect(() => {
@@ -56,6 +88,16 @@ export default function DashboardLayout({ children }) {
   useEffect(() => {
     if (!isLoading && !user && pathname.startsWith('/dashboard')) {
       router.push('/login')
+    }
+
+    // Redirect admin to admin dashboard if accessing member dashboard
+    if (user?.role === 'admin' && pathname === '/dashboard') {
+      router.push('/dashboard/admin')
+    }
+
+    // Redirect member to member dashboard if accessing admin routes
+    if (user?.role === 'member' && pathname.startsWith('/dashboard/admin')) {
+      router.push('/dashboard')
     }
   }, [user, isLoading, pathname, router])
 
@@ -155,6 +197,13 @@ export default function DashboardLayout({ children }) {
                     {/* <span className="inline-block mt-1 px-2 py-1 text-xs font-medium bg-primary/10 text-primary rounded-full">
                       {user?.role === 'member' ? 'Member' : user?.role}
                     </span> */}
+                    {/* Role Badge */}
+                    {user?.role === 'admin' && (
+                      <span className="inline-flex items-center mt-2 px-2 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium">
+                        <Icon icon="mdi:shield-account" className="w-3 h-3 mr-1" />
+                        Administrator
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -235,11 +284,14 @@ export default function DashboardLayout({ children }) {
               <nav className="mb-6">
                 <ol className="flex items-center space-x-2 text-sm text-gray-600">
                   <li>
-                    <Link href="/dashboard" className="hover:text-primary transition-colors">
+                    <Link 
+                      href={user?.role === 'admin' ? '/dashboard/admin' : '/dashboard'} 
+                      className="hover:text-primary transition-colors"
+                    >
                       Dashboard
                     </Link>
                   </li>
-                  {pathname !== '/dashboard' && (
+                  {pathname !== (user?.role === 'admin' ? '/dashboard/admin' : '/dashboard') && (
                     <>
                       <li>
                         <Icon icon="mdi:chevron-right" className="w-4 h-4" />
