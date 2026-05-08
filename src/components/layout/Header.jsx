@@ -11,7 +11,7 @@ const navigation = [
   { name: 'Beranda', href: '#home' },
   { name: 'Tentang', href: '#about' },
   { name: 'Event', href: '#events' },
-  { name: 'Partner', href: '#partners' },
+  // { name: 'Partner', href: '#partners' },
 ]
 
 const transparentHeaderPages = ['/', '/events', '/events/[id]', '/about', '/faq']

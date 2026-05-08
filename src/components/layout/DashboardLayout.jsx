@@ -45,6 +45,12 @@ const adminMenu = [
     exact: false
   },
   {
+    title: 'Member',
+    href: '/dashboard/admin/members',
+    icon: 'mdi:account-group',
+    exact: false
+  },
+  {
     title: 'Event',
     href: '/dashboard/admin/events',
     icon: 'mdi:calendar-star',
