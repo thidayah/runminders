@@ -1,26 +1,20 @@
 /**
  * Format date to Indonesian format
- * @param {string} dateString - Date string (YYYY-MM-DD)
+ * @param {string} dateString - Date string
+ * @param {Intl.DateTimeFormatOptions} options - Optional Intl.DateTimeFormat options
+ * @param {string} fallback - Fallback string if date is invalid (default: '-')
  * @returns {string} Formatted date
  */
-export const formatDate = (dateString) => {
-  if (!dateString) return '-'
-  
+export const formatDate = (dateString, options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }, fallback = '-') => {
+  if (!dateString) return fallback
+
   try {
     const date = new Date(dateString)
-    
-    // Check if date is valid
-    if (isNaN(date.getTime())) return '-'
-    
-    return date.toLocaleDateString('id-ID', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    })
+    if (isNaN(date.getTime())) return fallback
+    return new Intl.DateTimeFormat('id-ID', options).format(date)
   } catch (error) {
     console.error('Error formatting date:', error)
-    return '-'
+    return fallback
   }
 }
 

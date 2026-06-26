@@ -7,6 +7,7 @@ import Input from '@/components/ui/Input'
 import { useAuth } from '@/hooks/useAuth'
 import { Icon } from '@iconify/react'
 import { updateUserData } from '@/lib/auth-storage'
+import { formatDate } from '@/lib/formatters-utils'
 
 export default function ProfilePage() {
   const { user, token } = useAuth()
@@ -360,27 +361,13 @@ export default function ProfilePage() {
                   <div>
                     <p className="text-gray-500">Terdaftar Sejak</p>
                     <p className="font-medium text-gray-900">
-                      {new Date(user.created_at).toLocaleDateString('id-ID', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                      })}
+                      {formatDate(user.created_at, { year: 'numeric', month: 'long', day: 'numeric' }, 'Tidak tersedia')}
                     </p>
                   </div>
                   <div>
                     <p className="text-gray-500">Login Terakhir</p>
                     <p className="font-medium text-gray-900">
-                      {user.last_login ? (
-                        new Date(user.last_login).toLocaleDateString('id-ID', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })
-                      ) : (
-                        'Belum pernah login'
-                      )}
+                      {formatDate(user.last_login ?? user.last_login_at, { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }, 'Belum pernah login')}
                     </p>
                   </div>
                 </div>
