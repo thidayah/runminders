@@ -2,6 +2,11 @@ import { Icon } from '@iconify/react'
 import Link from "next/link"
 
 export default function Footer() {
+  const appMail = process.env.APP_MAIL
+  const appPhone = process.env.APP_PHONE
+  const appWhatsapp = process.env.APP_WHATSAPP
+  const appInstagram = process.env.APP_INSTAGRAM
+
   return (
     <footer className="bg-neutral-800 text-white">
       <div className="container mx-auto px-4 py-12">
@@ -21,7 +26,6 @@ export default function Footer() {
               <li><Link href={'/about'} className="hover:text-accent transition-colors">Tentang Kami</Link></li>
               <li><Link href={'/terms-conditions'} className="hover:text-accent transition-colors">Syarat & Ketentuan</Link></li>
               <li><Link href={'/privacy-policy'} className="hover:text-accent transition-colors">Kebijakan Privasi</Link></li>
-              {/* <li><Link href={'/blog'} className="hover:text-accent transition-colors">Blog</Link></li> */}
               <li><Link href={'/contact'} className="hover:text-accent transition-colors">Contact</Link></li>
               <li><Link href={'/faq'} className="hover:text-accent transition-colors">FAQ</Link></li>
             </ul>
@@ -31,37 +35,32 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Kontak Kami</h3>
 
-
             <div className="space-y-3 text-gray-300">
               {/* Email */}
               <div className="flex items-center gap-3">
                 <Icon icon="mdi:email-outline" width="20" height="20" />
-                <a href="mailto:info@runminders.id" className=" hover:text-accent">info@runminders.id</a>
+                <a href={`mailto:${appMail}`} className=" hover:text-accent">{appMail}</a>
               </div>
 
               {/* Phone */}
               <div className="flex items-center gap-3">
                 <Icon icon="mdi:phone-outline" width="20" height="20"/>
-                <a href="https://wa.me/6281234567890" target="_blank" className=" hover:text-accent">+62 812-3456-7890</a>
+                <a href={`tel:+${appPhone}`} className=" hover:text-accent">+{appPhone}</a>
               </div>
 
               {/* Social Media */}
               <div className="flex space-x-4 mt-4">
-                <a href="https://wa.me/6281234567890" className="hover:text-accent transition-colors flex items-center gap-1">
+                <a href={`${appWhatsapp}?text=${encodeURIComponent('Halo Runminders, aku mau bertanya nih..')}`} target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors flex items-center gap-1">
                   <Icon icon="mdi:whatsapp" width="20" height="20" />
-                  {/* <span className="hidden sm:inline">Instagram</span> */}
                 </a>
-                <a href="#" className="hover:text-accent transition-colors flex items-center gap-1">
+                <a href={appInstagram} target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors flex items-center gap-1">
                   <Icon icon="mdi:instagram" width="20" height="20" />
-                  {/* <span className="hidden sm:inline">Instagram</span> */}
-                </a>
-                <a href="#" className="hover:text-accent transition-colors flex items-center gap-1">
-                  <Icon icon="simple-icons:threads" width="18" height="18" />
-                  {/* <span className="hidden sm:inline">Threads</span> */}
                 </a>
                 {/* <a href="#" className="hover:text-accent transition-colors flex items-center gap-1">
+                  <Icon icon="simple-icons:threads" width="18" height="18" />                  
+                </a>
+                <a href="#" className="hover:text-accent transition-colors flex items-center gap-1">
                   <Icon icon="ic:baseline-tiktok" width="20" height="20" />
-                  <span className="hidden sm:inline">Tiktok</span>
                 </a> */}
               </div>
             </div>
@@ -70,7 +69,7 @@ export default function Footer() {
 
         {/* Copyright */}
         <div className="border-t  mt-8 pt-8 text-center text-gray-400">
-          &copy; 2024 Runminders. All rights reserved.
+          &copy; {new Date().getFullYear()} Runminders. All rights reserved.
         </div>
       </div>
     </footer>

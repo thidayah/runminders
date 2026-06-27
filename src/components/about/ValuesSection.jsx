@@ -32,7 +32,7 @@ export default function ValuesSection() {
             Nilai-Nilai Kami
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Fondasi yang membangun RUNminders menjadi platform terpercaya untuk komunitas pelari
+            Fondasi yang membangun Runminders menjadi platform terpercaya untuk komunitas pelari
           </p>
         </div>
 

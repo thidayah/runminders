@@ -3,7 +3,7 @@ export default function AboutSection() {
     "Platform yang khusus fokus pada event lari di Indonesia",
     // "Kurasi event berkualitas dari penyelenggara terpercaya", 
     "Proses pendaftaran yang simpel hanya dalam 3 langkah",
-    "Komunitas growing dengan 10.000+ pelari aktif",
+    "Komunitas growing dengan 100+ pelari aktif",
     // "Support penuh untuk pelari pemula dengan training guide",
     // "Update event real-time dan notifikasi personalized",
     "Dari pemula hingga pelari profesional", 

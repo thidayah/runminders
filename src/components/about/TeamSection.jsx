@@ -2,14 +2,14 @@ import { Icon } from '@iconify/react'
 
 const team = [
   {
-    name: 'Jane Doe',
+    name: 'Tiara Dewi Damayanti',
     role: 'Founder',
     image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop&crop=face',    
     
     bio: 'Aktif di komunitas lari dan event organizer berbagai event besar.'
   },
   {
-    name: 'John Doe',    
+    name: 'Taufik Hidayah',    
     role: 'Head of Product',    
     image: 'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?w=400&h=400&fit=crop&crop=face',
     bio: 'Software engineer dengan spesialisasi dalam scalable systems.'
@@ -37,7 +37,7 @@ export default function TeamSection() {
             Tim Kami
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Orang-orang berdedikasi di balik kesuksesan RUNminders
+            Orang-orang berdedikasi di balik kesuksesan Runminders
           </p>
         </div>
 
