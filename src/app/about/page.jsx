@@ -1,7 +1,7 @@
 import AboutHero from '@/components/about/AboutHero'
-import TeamSection from '@/components/about/TeamSection'
 import ValuesSection from '@/components/about/ValuesSection'
 import Layout from "@/components/layout/Layout"
+// import TeamSection from '@/components/about/TeamSection'
 
 export default function AboutPage() {
   return (
@@ -9,7 +9,7 @@ export default function AboutPage() {
       <div className="min-h-screen bg-white">
         <AboutHero />
         <ValuesSection />
-        <TeamSection />
+        {/* <TeamSection /> */}
       </div>
     </Layout>
   )
