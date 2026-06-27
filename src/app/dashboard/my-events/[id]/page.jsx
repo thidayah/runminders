@@ -308,7 +308,7 @@ export default function MyEventDetailPage() {
 
                   <div>
                     <p className="text-sm text-gray-600">Telepon</p>
-                    <p className="font-medium text-gray-900">{registration.participant_phone}</p>
+                    <p className="font-medium text-gray-900">{registration.participant_phone || '-'}</p>
                   </div>
                 </div>
 

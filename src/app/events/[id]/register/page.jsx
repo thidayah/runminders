@@ -7,7 +7,6 @@ import Button from "@/components/ui/Button"
 import Link from "next/link"
 import { Icon } from "@iconify/react"
 import { formatCurrency, formatDate } from "@/lib/formatters-utils"
-import { useAuth } from "@/hooks/useAuth"
 import { getUser } from "@/lib/auth-storage"
 
 export default function EventRegisterPage() {
@@ -76,8 +75,9 @@ export default function EventRegisterPage() {
             ...prev,
             event_id: eventData.id,
             member_id: user?.id,
-            participant_email: user?.email,
-            participant_full_name: user?.full_name
+            participant_email: user?.email || '',
+            participant_full_name: user?.full_name || '',
+            participant_phone: user?.phone_number || ''
           }))
 
           // Jika ada categoryId di URL, set selected category
