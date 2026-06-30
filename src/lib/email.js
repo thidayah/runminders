@@ -4,6 +4,7 @@ import { WelcomeEmail } from '@/components/emails/WelcomeEmail';
 import { ResetPasswordEmail } from '@/components/emails/ResetPasswordEmail';
 import { EventRegistrationEmail } from "@/components/emails/EventRegistrationEmail";
 import { PaymentSuccessEmail } from '@/components/emails/PaymentSuccessEmail';
+import { ContactAutoReplyEmail } from '@/components/emails/ContactAutoReplyEmail';
 
 // Initialize Resend
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -187,9 +188,36 @@ export async function sendPaymentSuccessEmail({
 
     console.log('Payment success email sent via Resend:', data);
     return { success: true, data };
-    
+
   } catch (error) {
     console.error('Error sending payment success email:', error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function sendContactAutoReplyEmail({ name, email, subject, message }) {
+  try {
+    const emailContent = ContactAutoReplyEmail({ name, subject, message });
+
+    const { data, error } = await resend.emails.send({
+      from: `${process.env.EMAIL_FROM_NAME} <${process.env.EMAIL_FROM_EMAIL}>`,
+      // to: [email],
+      to: ['muhamadt84@gmail.com'], // For testing
+      subject: `Pesan Anda Telah Diterima - ${process.env.APP_NAME || 'Runminders'}`,
+      html: emailContent.html,
+      text: emailContent.text
+    });
+
+    if (error) {
+      console.error('Resend contact auto-reply error:', error);
+      return { success: false, error: error.message };
+    }
+
+    console.log('Contact auto-reply email sent via Resend:', data);
+    return { success: true, data };
+
+  } catch (error) {
+    console.error('Error sending contact auto-reply email:', error);
     return { success: false, error: error.message };
   }
 }
