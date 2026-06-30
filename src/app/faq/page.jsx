@@ -20,7 +20,7 @@ export default function FAQPage() {
                   Pertanyaan Umum
                 </h1>
                 <p className="text-xl text-gray-400 mx-auto">
-                  Temukan jawaban untuk pertanyaan yang sering diajukan tentang RUNminders
+                  Temukan jawaban untuk pertanyaan yang sering diajukan tentang Runminders
                 </p>
               </div>
             </div>
@@ -34,7 +34,7 @@ export default function FAQPage() {
               Pertanyaan Umum
             </h1>
             <p className="text-xl text-gray-600">
-              Temukan jawaban untuk pertanyaan yang sering diajukan tentang RUNminders
+              Temukan jawaban untuk pertanyaan yang sering diajukan tentang Runminders
             </p>
           </div>
         </div>

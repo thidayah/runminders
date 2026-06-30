@@ -1,27 +1,5 @@
 import { Icon } from '@iconify/react'
-
-const values = [
-  {
-    icon: 'mdi:heart',
-    title: 'Komunitas',
-    description: 'Kami percaya kekuatan berlari ada dalam kebersamaan dan dukungan komunitas.'
-  },
-  {
-    icon: 'mdi:rocket',
-    title: 'Inovasi',
-    description: 'Terus berinovasi memberikan pengalaman terbaik bagi pelari Indonesia.'
-  },
-  {
-    icon: 'mdi:shield-check',
-    title: 'Kepercayaan',
-    description: 'Keamanan data dan transaksi menjadi prioritas utama kami.'
-  },
-  {
-    icon: 'mdi:run',
-    title: 'Semangat',
-    description: 'Mendorong setiap pelari untuk mencapai tujuan dan impian mereka.'
-  }
-]
+import { values } from '@/data/about'
 
 export default function ValuesSection() {
   return (

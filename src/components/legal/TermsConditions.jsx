@@ -1,22 +1,11 @@
 import LegalLayout from '@/components/ui/LegalLayout'
+import { termsSections } from '@/data/terms'
 
 export default function TermsConditions() {
-  const termsSections = [
-    { id: 'introduction', title: 'Penerimaan Ketentuan', icon: 'mdi:file-document-check' },
-    { id: 'account-registration', title: 'Pendaftaran Akun', icon: 'mdi:account-plus' },
-    { id: 'event-registration', title: 'Pendaftaran Event', icon: 'mdi:run-fast' },
-    { id: 'user-conduct', title: 'Perilaku Pengguna', icon: 'mdi:account-convert' },
-    { id: 'intellectual-property', title: 'Kekayaan Intelektual', icon: 'mdi:copyright' },
-    { id: 'limitation-liability', title: 'Pembatasan Tanggung Jawab', icon: 'mdi:scale-balance' },
-    { id: 'termination', title: 'Penghentian Layanan', icon: 'mdi:account-cancel' },
-    { id: 'governing-law', title: 'Hukum yang Berlaku', icon: 'mdi:gavel' },
-    { id: 'changes', title: 'Perubahan Ketentuan', icon: 'mdi:update' },
-    { id: 'contact', title: 'Kontak', icon: 'mdi:phone' }
-  ]
   return (
     <LegalLayout
       title="Syarat & Ketentuan"
-      subtitle="Ketentuan penggunaan platform RUNminders. Silakan baca dengan seksama sebelum menggunakan layanan kami."
+      subtitle="Ketentuan penggunaan platform Runminders. Silakan baca dengan seksama sebelum menggunakan layanan kami."
       lastUpdated="15 Desember 2024"
       sections={termsSections}
     >
@@ -24,7 +13,7 @@ export default function TermsConditions() {
       <section id="introduction" className="mb-12">
         <h2 className="text-2xl font-bold text-gray-800 mb-4">1. Penerimaan Ketentuan</h2>
         <p className="text-gray-700 mb-4">
-          Dengan mengakses atau menggunakan platform RUNminders ("Platform"), Anda setuju
+          Dengan mengakses atau menggunakan platform Runminders ("Platform"), Anda setuju
           untuk terikat oleh Syarat dan Ketentuan ini. Jika Anda tidak setuju dengan ketentuan
           apa pun, harap jangan gunakan Platform kami.
         </p>
@@ -67,7 +56,7 @@ export default function TermsConditions() {
             <h4 className="font-semibold text-gray-800 mb-2">Persyaratan Kesehatan</h4>
             <p className="text-gray-700 text-sm">
               Anda bertanggung jawab untuk memastikan kondisi kesehatan yang memadai sebelum
-              mendaftar event lari. RUNminders tidak bertanggung jawab atas cedera atau
+              mendaftar event lari. Runminders tidak bertanggung jawab atas cedera atau
               masalah kesehatan yang timbul selama partisipasi.
             </p>
           </div>
@@ -75,8 +64,9 @@ export default function TermsConditions() {
           <div className="border border-gray-200 rounded-xl p-4 bg-gray-50">
             <h4 className="font-semibold text-gray-800 mb-2">Pembayaran dan Pembatalan</h4>
             <p className="text-gray-700 text-sm">
-              Pembayaran bersifat final dan tidak dapat dikembalikan, kecuali event dibatalkan
-              oleh penyelenggara. Kebijakan pembatalan spesifik dapat bervariasi per event.
+              Pembatalan pendaftaran hanya dapat dilakukan selama status masih menunggu pembayaran.
+              Setelah pembayaran berhasil dikonfirmasi, pendaftaran bersifat final dan tidak dapat
+              dibatalkan. Pengembalian dana hanya berlaku apabila event dibatalkan oleh penyelenggara.
             </p>
           </div>
 
@@ -131,10 +121,10 @@ export default function TermsConditions() {
 
         <div className="space-y-4">
           <div className="border border-gray-200 rounded-xl p-4">
-            <h4 className="font-semibold text-gray-800 mb-2">Hak RUNminders</h4>
+            <h4 className="font-semibold text-gray-800 mb-2">Hak Runminders</h4>
             <p className="text-gray-700 text-sm">
               Seluruh konten, fitur, dan fungsi pada Platform, termasuk namun tidak terbatas
-              pada teks, grafis, logo, dan kode, adalah milik RUNminders dan dilindungi oleh
+              pada teks, grafis, logo, dan kode, adalah milik Runminders dan dilindungi oleh
               undang-undang hak cipta.
             </p>
           </div>
@@ -143,7 +133,7 @@ export default function TermsConditions() {
             <h4 className="font-semibold text-gray-800 mb-2">Konten Pengguna</h4>
             <p className="text-gray-700 text-sm">
               Anda mempertahankan kepemilikan atas konten yang Anda unggah, namun memberikan
-              RUNminders lisensi global untuk menggunakan, menampilkan, dan mendistribusikan
+              Runminders lisensi global untuk menggunakan, menampilkan, dan mendistribusikan
               konten tersebut dalam rangka menyediakan layanan.
             </p>
           </div>
@@ -157,7 +147,7 @@ export default function TermsConditions() {
         <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6">
           <h4 className="font-semibold text-yellow-800 mb-3">Peringatan Penting:</h4>
           <p className="text-yellow-700 mb-4">
-            RUNminders bertindak sebagai platform perantara antara peserta dan penyelenggara
+            Runminders bertindak sebagai platform perantara antara peserta dan penyelenggara
             event. Kami tidak bertanggung jawab atas:
           </p>
           <ul className="list-disc list-inside text-yellow-700 space-y-2">
@@ -176,7 +166,7 @@ export default function TermsConditions() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="border border-gray-200 rounded-xl p-4">
-            <h4 className="font-semibold text-gray-800 mb-2">Oleh RUNminders</h4>
+            <h4 className="font-semibold text-gray-800 mb-2">Oleh Runminders</h4>
             <p className="text-gray-600 text-sm">
               Kami dapat menghentikan atau menangguhkan akses Anda jika melanggar ketentuan,
               dengan atau tanpa pemberitahuan sebelumnya.
@@ -222,11 +212,11 @@ export default function TermsConditions() {
         <div className="bg-gray-50 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-3">
             <span className="font-semibold text-gray-800">Email:</span>
-            <a href="mailto:info@runminders.id" className="text-gray-700 hover:underline cursor-pointer">info@runminders.id</a>
+            <a href={`mailto:${process.env.APP_MAIL}`} className="text-gray-700 hover:underline cursor-pointer">{process.env.APP_MAIL}</a>
           </div>
           <div className="flex items-center gap-3">
             <span className="font-semibold text-gray-800">Website:</span>
-            <span className="text-gray-700 hover:underline cursor-pointer">www.runminders.id/terms-conditions</span>
+            <span className="text-gray-700">{process.env.APP_WEBSITE}/terms-conditions</span>
           </div>
           {/* <div className="flex items-center gap-3 mt-3">
             <span className="font-semibold text-gray-800">Alamat:</span>

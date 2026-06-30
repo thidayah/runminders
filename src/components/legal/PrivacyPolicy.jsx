@@ -1,19 +1,8 @@
 import LegalLayout from '@/components/ui/LegalLayout'
 import { Icon } from '@iconify/react'
+import { privacySections } from '@/data/privacy'
 
 export default function PrivacyPolicy() {
-  const privacySections = [
-    { id: 'introduction', title: 'Pendahuluan', icon: 'mdi:book-open' },
-    { id: 'data-collection', title: 'Pengumpulan Data', icon: 'mdi:database' },
-    { id: 'data-usage', title: 'Penggunaan Data', icon: 'mdi:rocket' },
-    { id: 'data-sharing', title: 'Berbagi Data', icon: 'mdi:handshake' },
-    { id: 'user-rights', title: 'Hak Pengguna', icon: 'mdi:shield-account' },
-    { id: 'cookies', title: 'Cookies', icon: 'mdi:cookie' },
-    { id: 'security', title: 'Keamanan', icon: 'mdi:lock' },
-    { id: 'changes', title: 'Perubahan', icon: 'mdi:update' },
-    { id: 'contact', title: 'Kontak', icon: 'mdi:phone' }
-  ]
-
   return (
     <LegalLayout
       title="Kebijakan Privasi"
@@ -25,10 +14,10 @@ export default function PrivacyPolicy() {
       <section id="introduction" className="mb-12">
         <h2 className="text-2xl font-bold text-gray-800 mb-4">1. Pendahuluan</h2>
         <p className="text-gray-700 mb-4">
-          RUNminders ("kami", "kita", "platform") menghargai privasi Anda dan berkomitmen
+          Runminders ("kami", "kita", "platform") menghargai privasi Anda dan berkomitmen
           untuk melindungi data pribadi yang Anda bagikan kepada kami. Kebijakan Privasi ini
           menjelaskan bagaimana kami mengumpulkan, menggunakan, mengungkapkan, dan melindungi
-          informasi Anda ketika Anda menggunakan platform RUNminders.
+          informasi Anda ketika Anda menggunakan platform Runminders.
         </p>
         <p className="text-gray-700">
           Dengan mengakses atau menggunakan layanan kami, Anda menyetujui pengumpulan dan
@@ -218,7 +207,7 @@ export default function PrivacyPolicy() {
         <p className="text-gray-700">
           Kami dapat memperbarui Kebijakan Privasi ini dari waktu ke waktu. Kami akan
           memberitahukan Anda tentang perubahan material melalui email atau pemberitahuan
-          di platform. Tanggal efektif terbari akan ditampilkan di bagian atas halaman ini.
+          di platform. Tanggal efektif terbaru akan ditampilkan di bagian atas halaman ini.
         </p>
       </section>
 
@@ -233,11 +222,11 @@ export default function PrivacyPolicy() {
         <div className="bg-gray-50 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-3">
             <span className="font-semibold text-gray-800">Email:</span>
-            <a href="mailto:info@runminders.id" className="text-gray-700 hover:underline cursor-pointer">info@runminders.id</a>
+            <a href={`mailto:${process.env.APP_MAIL}`} className="text-gray-700 hover:underline cursor-pointer">{process.env.APP_MAIL}</a>
           </div>
           <div className="flex items-center gap-3">
             <span className="font-semibold text-gray-800">Website:</span>
-            <span className="text-gray-700 hover:underline cursor-pointer">www.runminders.id/privacy-policy</span>
+            <span className="text-gray-700 hover:underline cursor-pointer">{process.env.APP_WEBSITE}/privacy-policy</span>
           </div>
           {/* <div className="flex items-center gap-3 mt-3">
             <span className="font-semibold text-gray-800">Alamat:</span>
