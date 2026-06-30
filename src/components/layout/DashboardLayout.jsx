@@ -61,6 +61,12 @@ const adminMenu = [
     href: '/dashboard/admin/partners',
     icon: 'mdi:handshake',
     exact: false
+  },
+  {
+    title: 'Kontak',
+    href: '/dashboard/admin/contacts',
+    icon: 'mdi:email-outline',
+    exact: false
   }
 ]
 
