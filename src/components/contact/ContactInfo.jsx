@@ -1,44 +1,31 @@
 import { Icon } from '@iconify/react'
 import Link from "next/link"
 
-const contactMethods = [
-  {
-    icon: 'mdi:email',
-    title: 'Email',
-    value: 'info@runminders.id',
-    description: 'Kami membalas dalam 1x24 jam'
-  },
-  {
-    icon: 'mdi:phone',
-    title: 'Telepon',
-    value: '+62 812-3456-7890',
-    description: 'Senin - Jumat, 09:00 - 18:00'
-  },
-  // {
-  //   icon: 'mdi:map-marker',
-  //   title: 'Kantor',
-  //   value: 'Jakarta, Indonesia',
-  //   description: 'Kunjungi dengan appointment'
-  // },
-  // {
-  //   icon: 'mdi:clock',
-  //   title: 'Support Hours',
-  //   value: '24/7 Online Support',
-  //   description: 'Untuk pertanyaan mendesak'
-  // }
-]
-
-const socialMedia = [
-  { icon: 'simple-icons:whatsapp', name: 'Whatsapp', url: 'https://wa.me/6281234567890' },
-  { icon: 'simple-icons:instagram', name: 'Instagram', url: '#' },
-  { icon: 'simple-icons:threads', name: 'Threads', url: '#' },
-  // { icon: 'ic:baseline-tiktok', name: 'Tiktok', url: '#' },
-  // { icon: 'mdi:twitter', name: 'Twitter', url: '#' },
-  // { icon: 'mdi:facebook', name: 'Facebook', url: '#' },
-  // { icon: 'mdi:linkedin', name: 'LinkedIn', url: '#' }
-]
-
 export default function ContactInfo() {
+  const contactMethods = [
+    {
+      icon: 'mdi:email',
+      title: 'Email',
+      value: process.env.APP_MAIL,
+      description: 'Kami membalas dalam 1x24 jam'
+    },
+    {
+      icon: 'mdi:phone',
+      title: 'Telepon',
+      value: `+${process.env.APP_PHONE}`,
+      description: 'Senin - Jumat, 09:00 - 18:00'
+    },
+  ]
+
+  const socialMedia = [
+    {
+      icon: 'simple-icons:whatsapp',
+      name: 'Whatsapp',
+      url: `${process.env.APP_WHATSAPP}?text=${encodeURIComponent('Halo Runminders, aku mau bertanya nih..')}`
+    },
+    { icon: 'simple-icons:instagram', name: 'Instagram', url: process.env.APP_INSTAGRAM },
+  ]
+
   return (
     <div className="space-y-8">
       {/* Contact Methods */}
@@ -71,6 +58,7 @@ export default function ContactInfo() {
               key={index}
               href={social.url}
               target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:border-primary hover:bg-primary/5 transition-colors"
             >
               <Icon icon={social.icon} width="20" height="20" className="text-gray-600" />

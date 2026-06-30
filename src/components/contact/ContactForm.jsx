@@ -12,25 +12,60 @@ export default function ContactForm() {
     message: ''
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+    if (errorMessage) setErrorMessage('')
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setIsSubmitting(true)
-    
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Form submitted:', formData)
+    setErrorMessage('')
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        setIsSuccess(true)
+        setFormData({ name: '', email: '', subject: '', message: '' })
+      } else {
+        setErrorMessage(result.message || 'Gagal mengirim pesan. Silakan coba lagi.')
+      }
+    } catch {
+      setErrorMessage('Terjadi kesalahan. Periksa koneksi internet Anda dan coba lagi.')
+    } finally {
       setIsSubmitting(false)
-      alert('Pesan berhasil dikirim! Kami akan membalas dalam 1x24 jam.')
-      setFormData({ name: '', email: '', subject: '', message: '' })
-    }, 2000)
+    }
+  }
+
+  if (isSuccess) {
+    return (
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 flex flex-col items-center justify-center text-center min-h-[400px]">
+        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
+          <Icon icon="mdi:check-circle" width="36" height="36" className="text-green-600" />
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Pesan Terkirim!</h2>
+        <p className="text-gray-600 mb-6 max-w-sm">
+          Terima kasih telah menghubungi kami. Kami akan membalas pesan Anda dalam <strong>1×24 jam</strong> ke email yang Anda cantumkan.
+        </p>
+        <Button
+          variant="primary"
+          size="md"
+          onClick={() => setIsSuccess(false)}
+        >
+          Kirim Pesan Lain
+        </Button>
+      </div>
+    )
   }
 
   return (
@@ -39,6 +74,13 @@ export default function ContactForm() {
       <p className="text-gray-600 mb-6">
         Isi form berikut dan tim kami akan segera merespons
       </p>
+
+      {errorMessage && (
+        <div className="flex items-start gap-3 bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 mb-6 text-sm">
+          <Icon icon="mdi:alert-circle-outline" width="20" height="20" className="shrink-0 mt-0.5" />
+          <span>{errorMessage}</span>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -118,7 +160,6 @@ export default function ContactForm() {
           size="md"
           disabled={isSubmitting}
           fullWidth={true}
-          // className="w-full"
         >
           {isSubmitting ? (
             <>
