@@ -15,6 +15,8 @@ export default function MyEventDetailPage() {
   const [data, setData] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isPrinting, setIsPrinting] = useState(false)
+  const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false)
+  const [isCancelling, setIsCancelling] = useState(false)
 
   const registrationId = params.id
 
@@ -87,6 +89,29 @@ export default function MyEventDetailPage() {
 
     const grossAmountInfo = data.payment_transactions[0].raw_response.metadata.extra_info.gross_amount_info
     return parseInt(grossAmountInfo.customer_imposed_payment_fee) || 0
+  }
+
+  // Handle cancel registration
+  const handleCancel = async () => {
+    setIsCancelling(true)
+    try {
+      const response = await fetch(`/api/my-events/${registrationId}`, {
+        method: 'PATCH',
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
+      const result = await response.json()
+      if (result.success) {
+        setIsCancelDialogOpen(false)
+        router.push('/dashboard/my-events')
+      } else {
+        alert(result.message || 'Gagal membatalkan registrasi')
+      }
+    } catch (error) {
+      console.error('Cancel error:', error)
+      alert('Terjadi kesalahan. Silakan coba lagi.')
+    } finally {
+      setIsCancelling(false)
+    }
   }
 
   // Handle print
@@ -198,6 +223,17 @@ export default function MyEventDetailPage() {
               <Button>
                 <Icon icon="mdi:credit-card" className="w-5 h-5 mr-2" />
                 Lanjutkan Pembayaran
+              </Button>
+            )}
+
+            {registration.status === 'pending' && registration.payment_status === 'pending' && (
+              <Button
+                variant="outline"
+                onClick={() => setIsCancelDialogOpen(true)}
+                className="text-red-600 border-red-300 hover:bg-red-50"
+              >
+                <Icon icon="mdi:close-circle-outline" className="w-5 h-5 mr-2" />
+                Batalkan
               </Button>
             )}
           </div>
@@ -556,6 +592,79 @@ export default function MyEventDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Cancel Confirmation Dialog */}
+      {isCancelDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => !isCancelling && setIsCancelDialogOpen(false)}
+          />
+
+          {/* Dialog */}
+          <div className="relative bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+            {/* Icon */}
+            <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 mx-auto mb-4">
+              <Icon icon="mdi:alert" className="w-6 h-6 text-red-600" />
+            </div>
+
+            <h3 className="text-lg font-semibold text-gray-900 text-center mb-1">
+              Batalkan Pendaftaran?
+            </h3>
+            <p className="text-sm text-gray-600 text-center mb-4">
+              Anda akan membatalkan pendaftaran untuk{' '}
+              <span className="font-medium text-gray-900">{event?.title}</span>.
+            </p>
+
+            {/* Refund Policy */}
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+              <div className="flex items-start gap-2">
+                <Icon icon="mdi:information" className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+                <div className="text-sm text-amber-800">
+                  <p className="font-medium mb-1">Kebijakan Pembatalan</p>
+                  <ul className="space-y-1 text-amber-700 list-disc pl-4">
+                    <li>Pembayaran belum dilakukan — tidak ada biaya yang dipotong.</li>
+                    <li>Jika Anda sudah mentransfer di luar sistem, hubungi panitia untuk proses pengembalian dana.</li>
+                    <li>Pembatalan setelah pembayaran dikonfirmasi tidak dapat dilakukan melalui halaman ini.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Nomor registrasi */}
+            <div className="bg-gray-50 rounded-lg p-3 mb-6 text-center">
+              <p className="text-xs text-gray-500">No. Registrasi</p>
+              <p className="font-mono font-semibold text-gray-800">{registration?.registration_number}</p>
+            </div>
+
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => setIsCancelDialogOpen(false)}
+                disabled={isCancelling}
+              >
+                Tidak, Kembali
+              </Button>
+              <Button
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white border-red-600"
+                onClick={handleCancel}
+                disabled={isCancelling}
+              >
+                {isCancelling ? (
+                  <>
+                    <Icon icon="mdi:loading" className="w-4 h-4 mr-2 animate-spin" />
+                    Membatalkan...
+                  </>
+                ) : (
+                  'Ya, Batalkan'
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Print Styles */}
       <style jsx global>{`

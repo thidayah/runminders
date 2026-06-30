@@ -164,3 +164,86 @@ export async function GET(request, { params }) {
     );
   }
 }
+
+export async function PATCH(request, { params }) {
+  try {
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ success: false, message: 'Token autentikasi diperlukan' }, { status: 401 });
+    }
+
+    const token = authHeader.split(' ')[1];
+    const decoded = verifyToken(token);
+    if (!decoded) {
+      return NextResponse.json({ success: false, message: 'Token tidak valid atau telah kedaluwarsa' }, { status: 401 });
+    }
+
+    const { id: registrationId } = await params;
+
+    // 1. Ambil registrasi + pastikan milik member yang login
+    const { data: registration, error: regError } = await supabaseServer
+      .from('registrations')
+      .select('*, event:events(is_free), category:event_categories(current_slots, waiting_list)')
+      .eq('id', registrationId)
+      .eq('member_id', decoded.id)
+      .single();
+
+    if (regError || !registration) {
+      return NextResponse.json({ success: false, message: 'Registrasi tidak ditemukan' }, { status: 404 });
+    }
+
+    // 2. Hanya boleh cancel jika masih pending
+    if (registration.status !== 'pending' || registration.payment_status !== 'pending') {
+      return NextResponse.json(
+        { success: false, message: 'Hanya registrasi dengan status menunggu pembayaran yang dapat dibatalkan' },
+        { status: 422 }
+      );
+    }
+
+    // 3. Update status registrasi menjadi cancelled
+    const { error: updateError } = await supabaseServer
+      .from('registrations')
+      .update({ status: 'cancelled', updated_at: new Date().toISOString() })
+      .eq('id', registrationId);
+
+    if (updateError) {
+      console.error('Error cancelling registration:', updateError);
+      return NextResponse.json({ success: false, message: 'Gagal membatalkan registrasi' }, { status: 500 });
+    }
+
+    // 4. Restore slot di event_categories
+    const isFree = registration.event?.is_free;
+    const cat = registration.category;
+    const slotUpdate = isFree
+      ? { current_slots: Math.max(0, (cat?.current_slots || 1) - 1) }
+      : { waiting_list: Math.max(0, (cat?.waiting_list || 1) - 1) };
+
+    await supabaseServer
+      .from('event_categories')
+      .update({ ...slotUpdate, updated_at: new Date().toISOString() })
+      .eq('id', registration.category_id);
+
+    // 5. Decrement current_participants di events
+    const { data: event } = await supabaseServer
+      .from('events')
+      .select('current_participants')
+      .eq('id', registration.event_id)
+      .single();
+
+    if (event) {
+      await supabaseServer
+        .from('events')
+        .update({
+          current_participants: Math.max(0, (event.current_participants || 1) - 1),
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', registration.event_id);
+    }
+
+    return NextResponse.json({ success: true, message: 'Registrasi berhasil dibatalkan' });
+
+  } catch (error) {
+    console.error('Cancel registration error:', error);
+    return NextResponse.json({ success: false, message: 'Terjadi kesalahan internal server' }, { status: 500 });
+  }
+}

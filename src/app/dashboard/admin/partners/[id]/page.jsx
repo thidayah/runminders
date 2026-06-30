@@ -227,7 +227,7 @@ export default function PartnerFormPage() {
             <p className="text-gray-600 mt-1">
               {isEditMode
                 ? 'Perbarui informasi partner yang sudah ada'
-                : 'Tambahkan partner baru untuk bekerja sama dengan RUNminders'}
+                : 'Tambahkan partner baru untuk bekerja sama dengan Runminders'}
             </p>
           </div>
           <Link

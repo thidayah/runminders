@@ -153,7 +153,7 @@ export default function AdminPartnersPage() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Manajemen Partner</h1>
-            <p className="text-gray-600 mt-1">Kelola semua partner yang bekerja sama dengan RUNminders</p>
+            <p className="text-gray-600 mt-1">Kelola semua partner yang bekerja sama dengan Runminders</p>
           </div>
           <Link href="/dashboard/admin/partners/create">
             <Button variant="primary" size="md">

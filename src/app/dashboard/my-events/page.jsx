@@ -120,7 +120,7 @@ export default function MyEventsPage() {
   // Get payment status badge style
   const getPaymentStatusBadge = (status) => {
     const styles = {
-      pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+      pending: 'bg-orange-100 text-orange-800 border-orange-200',
       paid: 'bg-green-100 text-green-800 border-green-200',
       failed: 'bg-red-100 text-red-800 border-red-200',
       expired: 'bg-gray-100 text-gray-800 border-gray-200'
@@ -287,8 +287,85 @@ export default function MyEventsPage() {
                 </div>
               ) : (
                 <>
+                  {/* Mobile Card List */}
+                  <div className="md:hidden divide-y divide-gray-200">
+                    {events.map((event) => (
+                      <div key={event.id} className="p-4 space-y-3">
+                        {/* Row 1: thumbnail + title + status badges */}
+                        <div className="flex items-start gap-3">
+                          <div className="shrink-0 w-14 h-14 rounded-lg overflow-hidden">
+                            <img
+                              className="w-full h-full object-cover"
+                              src={event.image_url || '/images/event-default.jpg'}
+                              alt={event.title}
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-semibold text-gray-900 leading-snug">{event.title}</p>
+                            <p className="text-xs text-gray-500 mt-0.5">{event.registration.registration_number}</p>
+                            <div className="flex flex-wrap gap-1.5 mt-1.5">
+                              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getStatusBadge(event.registration.status)}`}>
+                                {event.registration.status === 'confirmed' ? 'Terkonfirmasi' :
+                                 event.registration.status === 'pending' ? 'Menunggu' :
+                                 event.registration.status === 'cancelled' ? 'Dibatalkan' : event.registration.status}
+                              </span>
+                              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${getPaymentStatusBadge(event.registration.payment_status)}`}>
+                                {event.registration.payment_status === 'paid' ? 'Lunas' :
+                                 event.registration.payment_status === 'pending' ? 'Belum Bayar' :
+                                 event.registration.payment_status === 'failed' ? 'Gagal' : event.registration.payment_status}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Row 2: date + category */}
+                        <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
+                          <div className="flex items-center gap-1.5">
+                            <Icon icon="mdi:calendar" className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                            <span>{new Date(event.event_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <Icon icon="mdi:tag" className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                            <span>{event.category?.name || '-'}{event.category?.distance ? ` · ${event.category.distance}` : ''}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <Icon icon="mdi:map-marker" className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                            <span className="truncate">{event.location}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <Icon icon="mdi:cash" className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                            <span className="font-medium text-primary">{event.is_free ? 'Gratis' : formatCurrency(event.category?.price || 0)}</span>
+                          </div>
+                        </div>
+
+                        {/* Row 3: actions */}
+                        <div className="flex items-center gap-2 pt-1">
+                          <Link href={`/dashboard/my-events/${event.registration.id}`} className="flex-1">
+                            <Button size="sm" variant="outline" className="w-full">
+                              <Icon icon="mdi:information" className="w-4 h-4 mr-1.5" />
+                              Detail
+                            </Button>
+                          </Link>
+                          {event.registration.payment_status === 'pending' && (
+                            <Button size="sm" variant="primary">
+                              <Icon icon="mdi:credit-card" className="w-4 h-4 mr-1.5" />
+                              Bayar
+                            </Button>
+                          )}
+                          {event.registration.status === 'confirmed' && (
+                            <Link href={`/events/${event.id}`}>
+                              <Button size="sm" variant="outline">
+                                <Icon icon="mdi:eye" className="w-4 h-4" />
+                              </Button>
+                            </Link>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
                   {/* Desktop Table */}
-                  <div className="overflow-x-auto">
+                  <div className="hidden md:block overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
                       <thead className="bg-gray-50">
                         <tr>
@@ -318,7 +395,7 @@ export default function MyEventsPage() {
                             {/* Event Info */}
                             <td className="px-6 py-4 whitespace-nowrap">
                               <div className="flex items-center">
-                                <div className="flex-shrink-0 h-16 w-16 rounded-lg overflow-hidden">
+                                <div className="shrink-0 h-16 w-16 rounded-lg overflow-hidden">
                                   <img
                                     className="h-16 w-16 object-cover"
                                     src={event.image_url || '/images/event-default.jpg'}

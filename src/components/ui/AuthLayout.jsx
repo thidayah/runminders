@@ -12,7 +12,7 @@ export default function AuthLayout({ children, title, subtitle }) {
               // onClick={() => window.location.href = '/'}
               className="text-3xl font-bold text-primary hover:scale-105 transform transition-transform duration-200"
             >
-              RUNminders
+              Runminders
             </button>
           </div> */}
 
