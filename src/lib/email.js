@@ -20,8 +20,7 @@ export async function sendVerificationEmail(toEmail, verificationToken, fullName
 
     const { data, error } = await resend.emails.send({
       from: `${process.env.EMAIL_FROM_NAME} <${process.env.EMAIL_FROM_EMAIL}>`,
-      // to: [toEmail],
-      to: ['muhamadt84@gmail.com'], // For testing
+      to: [process.env.EMAIL_TEST_ADDRESS || toEmail],
       subject: 'Verifikasi Email Anda',
       html: emailContent.html,
       text: emailContent.text
@@ -50,8 +49,7 @@ export async function sendWelcomeEmail(toEmail, fullName) {
 
     const { data, error } = await resend.emails.send({
       from: `${process.env.EMAIL_FROM_NAME} <${process.env.EMAIL_FROM_EMAIL}>`,
-      // to: [toEmail],
-      to: ['muhamadt84@gmail.com'], // For testing
+      to: [process.env.EMAIL_TEST_ADDRESS || toEmail],
       subject: `Selamat Datang di ${process.env.APP_NAME || 'Runminders'}!`,
       html: emailContent.html,
       text: emailContent.text
@@ -82,8 +80,7 @@ export async function sendPasswordResetEmail(toEmail, resetToken, fullName) {
 
     const { data, error } = await resend.emails.send({
       from: `${process.env.EMAIL_FROM_NAME} <${process.env.EMAIL_FROM_EMAIL}>`,
-      // to: [toEmail],
-      to: ['muhamadt84@gmail.com'], // For testing
+      to: [process.env.EMAIL_TEST_ADDRESS || toEmail],
       subject: 'Reset Password - ' + (process.env.APP_NAME || 'Runminders'),
       html: emailContent.html,
       text: emailContent.text
@@ -132,8 +129,7 @@ export async function sendEventRegistrationEmail({
 
     const { data, error } = await resend.emails.send({
       from: `${process.env.EMAIL_FROM_NAME} <${process.env.EMAIL_FROM_EMAIL}>`,
-      // to: [toEmail],
-      to: ['muhamadt84@gmail.com'], // For testing
+      to: [process.env.EMAIL_TEST_ADDRESS || toEmail],
       subject: subject,
       html: emailContent.html,
       text: emailContent.text
@@ -174,8 +170,7 @@ export async function sendPaymentSuccessEmail({
 
     const { data, error } = await resend.emails.send({
       from: `${process.env.EMAIL_FROM_NAME} <${process.env.EMAIL_FROM_EMAIL}>`,
-      // to: [toEmail],
-      to: ['muhamadt84@gmail.com'], // For testing
+      to: [process.env.EMAIL_TEST_ADDRESS || toEmail],
       subject: `Pembayaran Berhasil - ${eventTitle}`,
       html: emailContent.html,
       text: emailContent.text
@@ -201,8 +196,7 @@ export async function sendContactAutoReplyEmail({ name, email, subject, message 
 
     const { data, error } = await resend.emails.send({
       from: `${process.env.EMAIL_FROM_NAME} <${process.env.EMAIL_FROM_EMAIL}>`,
-      // to: [email],
-      to: ['muhamadt84@gmail.com'], // For testing
+      to: [process.env.EMAIL_TEST_ADDRESS || email],
       subject: `Pesan Anda Telah Diterima - ${process.env.APP_NAME || 'Runminders'}`,
       html: emailContent.html,
       text: emailContent.text

@@ -6,7 +6,7 @@ Runminders adalah marketplace event lari berbasis web. Member bisa menemukan dan
 
 **Domain:** marketplace event lari
 **Deployment:** Vercel
-**Status:** Development — Midtrans sandbox, email Resend masih ke satu alamat test
+**Status:** Development — Midtrans sandbox, email Resend via `EMAIL_TEST_ADDRESS`
 
 ---
 
@@ -136,7 +136,7 @@ Tabel utama:
 
 **Role user:** `member` (default) | `admin`
 - Proteksi halaman dashboard dilakukan client-side via `useAuth()`
-- Proteksi API route dilakukan server-side via `middleware.js` (edge) + helper di dalam route handler
+- Proteksi API route dilakukan server-side via `proxy.js` (edge) + helper di dalam route handler
 
 **Helper auth di `src/lib/auth-utils.js`:**
 - `verifyAuth(request)` — decode JWT dari header `Authorization: Bearer <token>`, kembalikan payload atau `null`
@@ -185,7 +185,11 @@ Fungsi tersedia di `src/lib/email.js`:
 - `sendPaymentSuccessEmail()`
 - `sendContactAutoReplyEmail()` — auto-reply ke pengirim form kontak
 
-**Catatan:** Saat ini semua email diarahkan ke satu alamat test (`muhamadt84@gmail.com`). Belum production-ready.
+**Mode pengiriman email** dikontrol via env var `EMAIL_TEST_ADDRESS` di `.env.local`:
+- Jika `EMAIL_TEST_ADDRESS` diset → semua email diarahkan ke alamat tersebut (testing)
+- Jika tidak diset → email dikirim ke penerima asli (production)
+
+Untuk production di Vercel: jangan set `EMAIL_TEST_ADDRESS`.
 
 ---
 
@@ -220,15 +224,15 @@ API menggunakan **intent-based prefix** untuk memisahkan akses berdasarkan role:
 - Endpoint publik (`/api/events`, `/api/partners`, `/api/reviews`) hanya menyajikan data aktif — tidak ada mutasi
 - `/api/reviews` publik hanya menampilkan `is_active = true`; `/api/admin/reviews` menampilkan semua
 - `member_id` tidak boleh dikirim dari body/client — selalu diambil dari JWT token di server
-- Semua route admin dan me sudah diproteksi ganda: middleware (edge) + `verifyAuth`/`verifyAdmin` di dalam handler
+- Semua route admin dan me sudah diproteksi ganda: proxy (edge) + `verifyAuth`/`verifyAdmin` di dalam handler
 
 ---
 
 ## Hal Penting yang Perlu Diketahui
 
-- **Email test mode:** Semua email ke satu alamat hardcoded, bukan ke user sesungguhnya
+- **Email test mode:** Dikontrol via `EMAIL_TEST_ADDRESS` di `.env.local`. Set nilainya untuk testing, kosongkan di production
 - **Midtrans sandbox:** `MIDTRANS_IS_PRODUCTION=false`, belum production
-- **Middleware API:** `src/middleware.js` memproteksi `/api/me/*` (JWT) dan `/api/admin/*` (JWT + role=admin) di level edge. Proteksi halaman dashboard tetap client-side via `useAuth()`
+- **Proxy (edge guard):** `src/proxy.js` memproteksi `/api/me/*` (JWT) dan `/api/admin/*` (JWT + role=admin) di level Edge Runtime. Gunakan `verifyTokenEdge` dari `src/lib/auth-edge.js` — jangan import `auth-utils.js` karena pakai Node.js modules yang tidak kompatibel dengan Edge Runtime. Proteksi halaman dashboard tetap client-side via `useAuth()`
 - **Google OAuth:** Dikonfigurasi via NextAuth di `/api/auth/[...nextauth]`
 - **`/emails-preview`:** Halaman untuk preview semua template email (dev only)
 - **App partner terhubung:** RITW (Run In The Wood) dan SYD (Share Your Distance) — webhook di-forward berdasarkan prefix order ID
