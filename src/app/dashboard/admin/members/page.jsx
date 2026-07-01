@@ -85,7 +85,7 @@ export default function AdminMembersPage() {
         params.append('search', debouncedSearch)
       }
 
-      const response = await fetch(`/api/members?${params.toString()}`, {
+      const response = await fetch(`/api/admin/members?${params.toString()}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -153,7 +153,7 @@ export default function AdminMembersPage() {
 
   const handleToggleStatus = async (memberId, currentStatus) => {
     try {      
-      const response = await fetch(`/api/members/${memberId}`, {
+      const response = await fetch(`/api/admin/members/${memberId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -178,7 +178,7 @@ export default function AdminMembersPage() {
 
   const handleToggleVerified = async (memberId, currentVerified) => {
     try {      
-      const response = await fetch(`/api/members/${memberId}`, {
+      const response = await fetch(`/api/admin/members/${memberId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -203,7 +203,7 @@ export default function AdminMembersPage() {
 
   const handleRoleChange = async (memberId, newRole) => {
     try {      
-      const response = await fetch(`/api/members/${memberId}`, {
+      const response = await fetch(`/api/admin/members/${memberId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

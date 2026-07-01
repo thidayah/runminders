@@ -5,8 +5,10 @@ import Link from 'next/link'
 import { Icon } from '@iconify/react'
 import Button from '@/components/ui/Button'
 import DashboardLayout from "@/components/layout/DashboardLayout"
+import { useAuth } from '@/hooks/useAuth'
 
 export default function AdminEventsPage() {
+  const { token } = useAuth()
   const [events, setEvents] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -130,14 +132,13 @@ export default function AdminEventsPage() {
     }
   }
 
-  const handleToggleStatus = async (eventId, currentStatus) => {
+  const handleToggleStatus = async (eventId) => {
     try {
-      const response = await fetch(`/api/events/${eventId}`, {
-        method: 'PUT',
+      const response = await fetch(`/api/admin/events/${eventId}/toggle-status`, {
+        method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify({ is_active: !currentStatus })
       })
 
       const result = await response.json()
@@ -160,8 +161,9 @@ export default function AdminEventsPage() {
     }
 
     try {
-      const response = await fetch(`/api/events/${eventId}`, {
-        method: 'DELETE'
+      const response = await fetch(`/api/admin/events/${eventId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
       })
 
       const result = await response.json()

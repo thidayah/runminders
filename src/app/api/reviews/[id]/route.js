@@ -5,27 +5,28 @@ export async function GET(request, { params }) {
   try {
     const { id } = await params;
 
-    const { data: partner, error } = await supabaseServer
-      .from('partners')
+    const { data: review, error } = await supabaseServer
+      .from('reviews')
       .select('*')
       .eq('id', id)
+      .eq('is_active', true)
       .single();
 
-    if (error || !partner) {
+    if (error || !review) {
       return NextResponse.json(
-        { success: false, message: 'Partner tidak ditemukan' },
+        { success: false, message: 'Review tidak ditemukan' },
         { status: 404 }
       );
     }
 
     return NextResponse.json({
       success: true,
-      message: 'Partner berhasil diambil',
-      data: partner
+      message: 'Review berhasil diambil',
+      data: review
     });
 
   } catch (error) {
-    console.error('GET partner by id error:', error);
+    console.error('GET review by id error:', error);
     return NextResponse.json(
       { success: false, message: 'Terjadi kesalahan internal server' },
       { status: 500 }

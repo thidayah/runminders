@@ -1,0 +1,1693 @@
+{
+  "info": {
+    "_postman_id": "runminders-api-v2",
+    "name": "Runminders API",
+    "description": "Runminders — Running Event Marketplace\n\n**Struktur prefix:**\n- `/api/*` — Public, tanpa auth\n- `/api/me/*` — Member terautentikasi (Bearer token)\n- `/api/admin/*` — Admin only (Bearer token + role=admin)\n\n**Variables:** `base_url`, `token` (auto-set saat Login)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:3000", "type": "string" },
+    { "key": "token", "value": "", "type": "string", "description": "Auto-set oleh request Login" },
+    { "key": "event_id", "value": "a1b2c3d4-e5f6-7890-abcd-ef1234567890", "type": "string" },
+    { "key": "registration_id", "value": "b1c2d3e4-f5a6-7890-bcde-f12345678901", "type": "string" },
+    { "key": "member_id", "value": "c1d2e3f4-a5b6-7890-cdef-012345678901", "type": "string" },
+    { "key": "partner_id", "value": "d1e2f3a4-b5c6-7890-def0-123456789012", "type": "string" },
+    { "key": "review_id", "value": "e1f2a3b4-c5d6-7890-ef01-234567890123", "type": "string" },
+    { "key": "contact_id", "value": "f1a2b3c4-d5e6-7890-f012-345678901234", "type": "string" },
+    { "key": "category_id", "value": "a2b3c4d5-e6f7-8901-abcd-ef2345678901", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "description": "Autentikasi: register, login, verifikasi email, reset password",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"full_name\": \"Budi Santoso\",\n  \"email\": \"budi@example.com\",\n  \"password\": \"Password123!\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            }
+          },
+          "response": [
+            {
+              "name": "201 Created - Berhasil",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"full_name\": \"Budi Santoso\",\n  \"email\": \"budi@example.com\",\n  \"password\": \"Password123!\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": { "raw": "{{base_url}}/api/auth/register", "host": ["{{base_url}}"], "path": ["api", "auth", "register"] }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Registrasi berhasil. Silakan verifikasi email Anda.\",\n  \"data\": {\n    \"user\": {\n      \"id\": \"c1d2e3f4-a5b6-7890-cdef-012345678901\",\n      \"email\": \"budi@example.com\",\n      \"full_name\": \"Budi Santoso\",\n      \"role\": \"member\",\n      \"is_email_verified\": false\n    }\n  }\n}"
+            },
+            {
+              "name": "409 Conflict - Email sudah terdaftar",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": { "mode": "raw", "raw": "{\n  \"full_name\": \"Budi Santoso\",\n  \"email\": \"budi@example.com\",\n  \"password\": \"Password123!\"\n}", "options": { "raw": { "language": "json" } } },
+                "url": { "raw": "{{base_url}}/api/auth/register", "host": ["{{base_url}}"], "path": ["api", "auth", "register"] }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Email sudah terdaftar\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  var json = pm.response.json();",
+                  "  if (json.data && json.data.token) {",
+                  "    pm.collectionVariables.set('token', json.data.token);",
+                  "    console.log('Token saved.');",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"budi@example.com\",\n  \"password\": \"Password123!\",\n  \"rememberMe\": true\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - Berhasil (token auto-saved)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": { "mode": "raw", "raw": "{\n  \"email\": \"budi@example.com\",\n  \"password\": \"Password123!\",\n  \"rememberMe\": true\n}", "options": { "raw": { "language": "json" } } },
+                "url": { "raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api", "auth", "login"] }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Login berhasil\",\n  \"data\": {\n    \"user\": {\n      \"id\": \"c1d2e3f4-a5b6-7890-cdef-012345678901\",\n      \"email\": \"budi@example.com\",\n      \"full_name\": \"Budi Santoso\",\n      \"role\": \"member\",\n      \"is_email_verified\": true,\n      \"avatar_url\": null\n    },\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMxZDJlM2Y0LWE1YjYtNzg5MC1jZGVmLTAxMjM0NTY3ODkwMSIsImVtYWlsIjoiYnVkaUBleGFtcGxlLmNvbSIsInJvbGUiOiJtZW1iZXIiLCJpYXQiOjE3NTEzNjAwMDAsImV4cCI6MTc1MTk2NDgwMH0.sample\"\n  }\n}"
+            },
+            {
+              "name": "401 Unauthorized - Password salah",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": { "mode": "raw", "raw": "{\n  \"email\": \"budi@example.com\",\n  \"password\": \"wrongpassword\"\n}", "options": { "raw": { "language": "json" } } },
+                "url": { "raw": "{{base_url}}/api/auth/login", "host": ["{{base_url}}"], "path": ["api", "auth", "login"] }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Email atau password salah\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/auth/verify-email?token=sample-verification-token-here",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "verify-email"],
+              "query": [{ "key": "token", "value": "sample-verification-token-here" }]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - Email terverifikasi",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": { "raw": "{{base_url}}/api/auth/verify-email?token=sample-verification-token-here", "host": ["{{base_url}}"], "path": ["api", "auth", "verify-email"], "query": [{ "key": "token", "value": "sample-verification-token-here" }] }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Email berhasil diverifikasi. Silakan login.\"\n}"
+            },
+            {
+              "name": "400 Bad Request - Token tidak valid",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": { "raw": "{{base_url}}/api/auth/verify-email?token=invalid-token", "host": ["{{base_url}}"], "path": ["api", "auth", "verify-email"], "query": [{ "key": "token", "value": "invalid-token" }] }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Token verifikasi tidak valid atau sudah kadaluarsa\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Resend Verification",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"budi@example.com\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/resend-verification",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "resend-verification"]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - Email dikirim ulang",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": { "mode": "raw", "raw": "{\n  \"email\": \"budi@example.com\"\n}", "options": { "raw": { "language": "json" } } },
+                "url": { "raw": "{{base_url}}/api/auth/resend-verification", "host": ["{{base_url}}"], "path": ["api", "auth", "resend-verification"] }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Email verifikasi telah dikirim ulang\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"budi@example.com\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/forgot-password",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "forgot-password"]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - Link dikirim",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": { "mode": "raw", "raw": "{\n  \"email\": \"budi@example.com\"\n}", "options": { "raw": { "language": "json" } } },
+                "url": { "raw": "{{base_url}}/api/auth/forgot-password", "host": ["{{base_url}}"], "path": ["api", "auth", "forgot-password"] }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Link reset password telah dikirim ke email Anda\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"reset-token-from-email\",\n  \"password\": \"NewPassword123!\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/reset-password",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "reset-password"]
+            }
+          },
+          "response": [
+            {
+              "name": "200 OK - Password direset",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": { "mode": "raw", "raw": "{\n  \"token\": \"reset-token-from-email\",\n  \"password\": \"NewPassword123!\"\n}", "options": { "raw": { "language": "json" } } },
+                "url": { "raw": "{{base_url}}/api/auth/reset-password", "host": ["{{base_url}}"], "path": ["api", "auth", "reset-password"] }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Password berhasil direset. Silakan login dengan password baru.\"\n}"
+            },
+            {
+              "name": "400 Bad Request - Token kadaluarsa",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": { "mode": "raw", "raw": "{\n  \"token\": \"expired-token\",\n  \"password\": \"NewPassword123!\"\n}", "options": { "raw": { "language": "json" } } },
+                "url": { "raw": "{{base_url}}/api/auth/reset-password", "host": ["{{base_url}}"], "path": ["api", "auth", "reset-password"] }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Token reset password tidak valid atau sudah kadaluarsa\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Public",
+      "description": "Endpoint publik — tidak memerlukan autentikasi",
+      "item": [
+        {
+          "name": "Events",
+          "item": [
+            {
+              "name": "Get All Events",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/events?page=1&limit=10&search=&sort=newest",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "events"],
+                  "query": [
+                    { "key": "page", "value": "1", "description": "Nomor halaman" },
+                    { "key": "limit", "value": "10", "description": "Jumlah per halaman (default 10, max 50)" },
+                    { "key": "search", "value": "", "description": "Kata kunci pencarian" },
+                    { "key": "category", "value": "", "description": "Filter by kategori/distance", "disabled": true },
+                    { "key": "sort", "value": "newest", "description": "newest | oldest | price_asc | price_desc" }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK - Daftar event",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": { "raw": "{{base_url}}/api/events?page=1&limit=10&sort=newest", "host": ["{{base_url}}"], "path": ["api", "events"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }, { "key": "sort", "value": "newest" }] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"data\": {\n    \"events\": [\n      {\n        \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n        \"title\": \"Bali Ultra Trail 2026\",\n        \"subtitle\": \"Run Through Paradise\",\n        \"slug\": \"bali-ultra-trail-2026\",\n        \"image_url\": \"https://example.com/images/bali-ultra.jpg\",\n        \"event_date\": \"2026-08-15T05:00:00.000Z\",\n        \"location\": \"Ubud, Bali\",\n        \"base_price\": 350000,\n        \"is_free\": false,\n        \"is_active\": true,\n        \"current_participants\": 120,\n        \"max_participants\": 500\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 10,\n      \"total\": 25,\n      \"totalPages\": 3\n    }\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Get Event by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/events/{{event_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "events", "{{event_id}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK - Detail event",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": { "raw": "{{base_url}}/api/events/{{event_id}}", "host": ["{{base_url}}"], "path": ["api", "events", "{{event_id}}"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"data\": {\n    \"event\": {\n      \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"title\": \"Bali Ultra Trail 2026\",\n      \"subtitle\": \"Run Through Paradise\",\n      \"slug\": \"bali-ultra-trail-2026\",\n      \"description\": \"Lomba lari trail terpanjang di Bali dengan pemandangan sawah dan hutan tropis.\",\n      \"image_url\": \"https://example.com/images/bali-ultra.jpg\",\n      \"event_date\": \"2026-08-15T05:00:00.000Z\",\n      \"start_time\": \"05:00\",\n      \"end_time\": \"18:00\",\n      \"registration_deadline\": \"2026-08-01T23:59:59.000Z\",\n      \"location\": \"Ubud, Bali\",\n      \"location_type\": \"outdoor\",\n      \"base_price\": 350000,\n      \"is_free\": false,\n      \"max_participants\": 500,\n      \"current_participants\": 120,\n      \"is_active\": true,\n      \"organizer_name\": \"Runminders Events\"\n    },\n    \"categories\": [\n      {\n        \"id\": \"a2b3c4d5-e6f7-8901-abcd-ef2345678901\",\n        \"name\": \"5K Fun Run\",\n        \"distance\": \"5\",\n        \"price\": 150000,\n        \"max_participants\": 200,\n        \"current_slots\": 45,\n        \"is_active\": true\n      },\n      {\n        \"id\": \"a3b4c5d6-e7f8-9012-abcd-ef3456789012\",\n        \"name\": \"10K Race\",\n        \"distance\": \"10\",\n        \"price\": 250000,\n        \"max_participants\": 200,\n        \"current_slots\": 65,\n        \"is_active\": true\n      }\n    ],\n    \"similar_events\": []\n  }\n}"
+                },
+                {
+                  "name": "404 Not Found",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": { "raw": "{{base_url}}/api/events/nonexistent-id", "host": ["{{base_url}}"], "path": ["api", "events", "nonexistent-id"] }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": false,\n  \"message\": \"Event tidak ditemukan\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Get Event by Slug",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/events/slug/bali-ultra-trail-2026",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "events", "slug", "bali-ultra-trail-2026"]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK - Event ditemukan",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": { "raw": "{{base_url}}/api/events/slug/bali-ultra-trail-2026", "host": ["{{base_url}}"], "path": ["api", "events", "slug", "bali-ultra-trail-2026"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"data\": {\n    \"event\": {\n      \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"title\": \"Bali Ultra Trail 2026\",\n      \"slug\": \"bali-ultra-trail-2026\",\n      \"event_date\": \"2026-08-15T05:00:00.000Z\",\n      \"location\": \"Ubud, Bali\",\n      \"base_price\": 350000,\n      \"is_active\": true\n    }\n  }\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Partners",
+          "item": [
+            {
+              "name": "Get All Partners",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/partners?page=1&limit=20",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "partners"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "20" },
+                    { "key": "status", "value": "active", "description": "active | inactive", "disabled": true }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK - Daftar partner",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": { "raw": "{{base_url}}/api/partners", "host": ["{{base_url}}"], "path": ["api", "partners"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"data\": {\n    \"partners\": [\n      {\n        \"id\": \"d1e2f3a4-b5c6-7890-def0-123456789012\",\n        \"name\": \"Nike Indonesia\",\n        \"website\": \"https://nike.com\",\n        \"logo_url\": \"https://example.com/logos/nike.svg\",\n        \"contact_person\": \"Andi Wijaya\",\n        \"is_active\": true,\n        \"created_at\": \"2026-01-15T10:00:00.000Z\"\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 20,\n      \"total\": 5,\n      \"totalPages\": 1\n    }\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Get Partner by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/partners/{{partner_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "partners", "{{partner_id}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK - Detail partner",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": { "raw": "{{base_url}}/api/partners/{{partner_id}}", "host": ["{{base_url}}"], "path": ["api", "partners", "{{partner_id}}"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"data\": {\n    \"partner\": {\n      \"id\": \"d1e2f3a4-b5c6-7890-def0-123456789012\",\n      \"name\": \"Nike Indonesia\",\n      \"website\": \"https://nike.com\",\n      \"logo_url\": \"https://example.com/logos/nike.svg\",\n      \"contact_person\": \"Andi Wijaya\",\n      \"is_active\": true\n    }\n  }\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Reviews",
+          "item": [
+            {
+              "name": "Get All Reviews",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/reviews?page=1&limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "reviews"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "10" }
+                  ]
+                },
+                "description": "Hanya menampilkan review aktif (is_active = true)"
+              },
+              "response": [
+                {
+                  "name": "200 OK - Daftar review aktif",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": { "raw": "{{base_url}}/api/reviews", "host": ["{{base_url}}"], "path": ["api", "reviews"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"data\": {\n    \"reviews\": [\n      {\n        \"id\": \"e1f2a3b4-c5d6-7890-ef01-234567890123\",\n        \"reviewer_name\": \"Siti Rahayu\",\n        \"reviewer_title\": \"Pelari Maraton\",\n        \"content\": \"Platform yang sangat memudahkan registrasi event lari. Recommended!\",\n        \"rating\": 5,\n        \"reviewer_photo_url\": \"https://example.com/photos/siti.jpg\",\n        \"is_active\": true,\n        \"created_at\": \"2026-05-10T08:00:00.000Z\"\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 10,\n      \"total\": 8,\n      \"totalPages\": 1\n    }\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Get Review by ID",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/reviews/{{review_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "reviews", "{{review_id}}"]
+                },
+                "description": "Hanya bisa mengambil review yang aktif"
+              },
+              "response": [
+                {
+                  "name": "200 OK - Detail review",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": { "raw": "{{base_url}}/api/reviews/{{review_id}}", "host": ["{{base_url}}"], "path": ["api", "reviews", "{{review_id}}"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"data\": {\n    \"review\": {\n      \"id\": \"e1f2a3b4-c5d6-7890-ef01-234567890123\",\n      \"reviewer_name\": \"Siti Rahayu\",\n      \"reviewer_title\": \"Pelari Maraton\",\n      \"content\": \"Platform yang sangat memudahkan registrasi event lari.\",\n      \"rating\": 5,\n      \"is_active\": true\n    }\n  }\n}"
+                },
+                {
+                  "name": "404 Not Found - Review tidak aktif/tidak ada",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": { "raw": "{{base_url}}/api/reviews/nonexistent", "host": ["{{base_url}}"], "path": ["api", "reviews", "nonexistent"] }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": false,\n  \"message\": \"Review tidak ditemukan\"\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Contact",
+          "item": [
+            {
+              "name": "Submit Contact Message",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Budi Santoso\",\n  \"email\": \"budi@example.com\",\n  \"subject\": \"Pertanyaan tentang Event\",\n  \"message\": \"Halo, saya ingin bertanya mengenai pendaftaran event Bali Ultra Trail 2026. Apakah masih ada slot yang tersedia?\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/contact",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "contact"]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK - Pesan terkirim",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [{ "key": "Content-Type", "value": "application/json" }],
+                    "body": { "mode": "raw", "raw": "{\n  \"name\": \"Budi Santoso\",\n  \"email\": \"budi@example.com\",\n  \"subject\": \"Pertanyaan tentang Event\",\n  \"message\": \"Halo, saya ingin bertanya mengenai pendaftaran event.\"\n}", "options": { "raw": { "language": "json" } } },
+                    "url": { "raw": "{{base_url}}/api/contact", "host": ["{{base_url}}"], "path": ["api", "contact"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"message\": \"Pesan berhasil dikirim. Kami akan menghubungi Anda segera.\"\n}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Me (Authenticated)",
+      "description": "Endpoint untuk member yang sudah login. Semua request wajib menyertakan header: Authorization: Bearer {{token}}",
+      "item": [
+        {
+          "name": "Profile",
+          "item": [
+            {
+              "name": "Get Profile",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/me/profile",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "me", "profile"]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK - Profil berhasil diambil",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "url": { "raw": "{{base_url}}/api/me/profile", "host": ["{{base_url}}"], "path": ["api", "me", "profile"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"message\": \"Profil berhasil diambil\",\n  \"data\": {\n    \"user\": {\n      \"id\": \"c1d2e3f4-a5b6-7890-cdef-012345678901\",\n      \"email\": \"budi@example.com\",\n      \"full_name\": \"Budi Santoso\",\n      \"role\": \"member\",\n      \"is_email_verified\": true,\n      \"avatar_url\": null,\n      \"phone_number\": \"081234567890\",\n      \"created_at\": \"2026-01-10T08:00:00.000Z\",\n      \"last_login_at\": \"2026-07-01T09:30:00.000Z\"\n    }\n  }\n}"
+                },
+                {
+                  "name": "401 Unauthorized - Token tidak valid",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [{ "key": "Authorization", "value": "Bearer invalid-token" }],
+                    "url": { "raw": "{{base_url}}/api/me/profile", "host": ["{{base_url}}"], "path": ["api", "me", "profile"] }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": false,\n  \"message\": \"Token tidak valid\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Update Profile",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"full_name\": \"Budi Santoso\",\n  \"phone_number\": \"081234567890\",\n  \"avatar_url\": \"https://example.com/avatar/budi.jpg\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/me/profile",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "me", "profile"]
+                },
+                "description": "Field yang dapat diubah: full_name, email, phone_number, avatar_url. Jika email diubah, token baru akan diterbitkan dan verifikasi email ulang diperlukan."
+              },
+              "response": [
+                {
+                  "name": "200 OK - Profil diperbarui",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "body": { "mode": "raw", "raw": "{\n  \"full_name\": \"Budi Santoso\",\n  \"phone_number\": \"081234567890\"\n}", "options": { "raw": { "language": "json" } } },
+                    "url": { "raw": "{{base_url}}/api/me/profile", "host": ["{{base_url}}"], "path": ["api", "me", "profile"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"message\": \"Profil berhasil diupdate\",\n  \"data\": {\n    \"user\": {\n      \"id\": \"c1d2e3f4-a5b6-7890-cdef-012345678901\",\n      \"email\": \"budi@example.com\",\n      \"full_name\": \"Budi Santoso\",\n      \"role\": \"member\",\n      \"is_email_verified\": true,\n      \"avatar_url\": null,\n      \"phone_number\": \"081234567890\"\n    },\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.same-token\",\n    \"requires_reauthentication\": false\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Update Password",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"current_password\": \"Password123!\",\n  \"new_password\": \"NewPassword456!\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/me/password",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "me", "password"]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK - Password diperbarui",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "body": { "mode": "raw", "raw": "{\n  \"current_password\": \"Password123!\",\n  \"new_password\": \"NewPassword456!\"\n}", "options": { "raw": { "language": "json" } } },
+                    "url": { "raw": "{{base_url}}/api/me/password", "host": ["{{base_url}}"], "path": ["api", "me", "password"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"message\": \"Password berhasil diperbarui\"\n}"
+                },
+                {
+                  "name": "400 Bad Request - Password saat ini salah",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "body": { "mode": "raw", "raw": "{\n  \"current_password\": \"WrongPassword\",\n  \"new_password\": \"NewPassword456!\"\n}", "options": { "raw": { "language": "json" } } },
+                    "url": { "raw": "{{base_url}}/api/me/password", "host": ["{{base_url}}"], "path": ["api", "me", "password"] }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": false,\n  \"message\": \"Password saat ini tidak sesuai\"\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "My Events",
+          "item": [
+            {
+              "name": "Get My Events",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/me/events?page=1&limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "me", "events"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "10" },
+                    { "key": "status", "value": "active", "description": "Filter status registrasi", "disabled": true }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK - Daftar event yang didaftarkan",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "url": { "raw": "{{base_url}}/api/me/events", "host": ["{{base_url}}"], "path": ["api", "me", "events"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"data\": {\n    \"registrations\": [\n      {\n        \"id\": \"b1c2d3e4-f5a6-7890-bcde-f12345678901\",\n        \"registration_number\": \"REG-2026-001234\",\n        \"status\": \"active\",\n        \"payment_status\": \"paid\",\n        \"total_amount\": 250000,\n        \"registration_date\": \"2026-06-15T10:00:00.000Z\",\n        \"event\": {\n          \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n          \"title\": \"Bali Ultra Trail 2026\",\n          \"event_date\": \"2026-08-15T05:00:00.000Z\",\n          \"location\": \"Ubud, Bali\"\n        },\n        \"category\": {\n          \"name\": \"10K Race\",\n          \"distance\": \"10\"\n        }\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 10,\n      \"total\": 3,\n      \"totalPages\": 1\n    }\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Get My Event Detail",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/me/events/{{registration_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "me", "events", "{{registration_id}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK - Detail registrasi",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "url": { "raw": "{{base_url}}/api/me/events/{{registration_id}}", "host": ["{{base_url}}"], "path": ["api", "me", "events", "{{registration_id}}"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"message\": \"Detail event berhasil diambil\",\n  \"data\": {\n    \"registration\": {\n      \"id\": \"b1c2d3e4-f5a6-7890-bcde-f12345678901\",\n      \"registration_number\": \"REG-2026-001234\",\n      \"status\": \"active\",\n      \"payment_status\": \"paid\",\n      \"participant_full_name\": \"Budi Santoso\",\n      \"participant_email\": \"budi@example.com\",\n      \"participant_phone\": \"081234567890\",\n      \"emergency_contact_name\": \"Ani Santoso\",\n      \"emergency_contact_phone\": \"081298765432\",\n      \"medical_notes\": null,\n      \"total_amount\": 250000,\n      \"payment_date\": \"2026-06-15T10:05:00.000Z\",\n      \"registration_date\": \"2026-06-15T10:00:00.000Z\"\n    },\n    \"event\": {\n      \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n      \"title\": \"Bali Ultra Trail 2026\",\n      \"event_date\": \"2026-08-15T05:00:00.000Z\",\n      \"location\": \"Ubud, Bali\"\n    },\n    \"category\": {\n      \"id\": \"a3b4c5d6-e7f8-9012-abcd-ef3456789012\",\n      \"name\": \"10K Race\",\n      \"distance\": \"10\",\n      \"price\": 250000\n    },\n    \"payment_transactions\": [\n      {\n        \"id\": \"txn-001\",\n        \"order_id\": \"RM-2026-001234\",\n        \"transaction_status\": \"settlement\",\n        \"payment_type\": \"bank_transfer\",\n        \"gross_amount\": 250000,\n        \"transaction_time\": \"2026-06-15T10:05:00.000Z\"\n      }\n    ]\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Cancel Registration",
+              "request": {
+                "method": "PATCH",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/me/events/{{registration_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "me", "events", "{{registration_id}}"]
+                },
+                "description": "Hanya bisa membatalkan registrasi yang masih status pending (belum bayar)"
+              },
+              "response": [
+                {
+                  "name": "200 OK - Registrasi dibatalkan",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "url": { "raw": "{{base_url}}/api/me/events/{{registration_id}}", "host": ["{{base_url}}"], "path": ["api", "me", "events", "{{registration_id}}"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"message\": \"Registrasi berhasil dibatalkan\"\n}"
+                },
+                {
+                  "name": "422 Unprocessable - Sudah dibayar",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "url": { "raw": "{{base_url}}/api/me/events/{{registration_id}}", "host": ["{{base_url}}"], "path": ["api", "me", "events", "{{registration_id}}"] }
+                  },
+                  "status": "Unprocessable Entity",
+                  "code": 422,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": false,\n  \"message\": \"Hanya registrasi dengan status menunggu pembayaran yang dapat dibatalkan\"\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Registrations",
+          "item": [
+            {
+              "name": "Create Registration",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"event_id\": \"{{event_id}}\",\n  \"category_id\": \"{{category_id}}\",\n  \"participant_full_name\": \"Budi Santoso\",\n  \"participant_email\": \"budi@example.com\",\n  \"participant_phone\": \"081234567890\",\n  \"emergency_contact_name\": \"Ani Santoso\",\n  \"emergency_contact_phone\": \"081298765432\",\n  \"medical_notes\": null,\n  \"additional_notes\": null\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/me/registrations",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "me", "registrations"]
+                },
+                "description": "Membuat registrasi baru dan mendapatkan token Snap Midtrans untuk pembayaran"
+              },
+              "response": [
+                {
+                  "name": "201 Created - Registrasi berhasil & Snap token tersedia",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "body": { "mode": "raw", "raw": "{\n  \"event_id\": \"{{event_id}}\",\n  \"category_id\": \"{{category_id}}\",\n  \"participant_full_name\": \"Budi Santoso\",\n  \"participant_email\": \"budi@example.com\",\n  \"participant_phone\": \"081234567890\",\n  \"emergency_contact_name\": \"Ani Santoso\",\n  \"emergency_contact_phone\": \"081298765432\"\n}", "options": { "raw": { "language": "json" } } },
+                    "url": { "raw": "{{base_url}}/api/me/registrations", "host": ["{{base_url}}"], "path": ["api", "me", "registrations"] }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"message\": \"Registrasi berhasil dibuat\",\n  \"data\": {\n    \"registration\": {\n      \"id\": \"b1c2d3e4-f5a6-7890-bcde-f12345678901\",\n      \"registration_number\": \"REG-2026-001235\",\n      \"status\": \"pending\",\n      \"payment_status\": \"pending\",\n      \"total_amount\": 250000\n    },\n    \"snapToken\": \"snap-token-from-midtrans\",\n    \"redirectUrl\": \"https://app.sandbox.midtrans.com/snap/v2/vtweb/snap-token-from-midtrans\"\n  }\n}"
+                },
+                {
+                  "name": "409 Conflict - Sudah terdaftar",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "body": { "mode": "raw", "raw": "{\n  \"event_id\": \"{{event_id}}\",\n  \"category_id\": \"{{category_id}}\",\n  \"participant_full_name\": \"Budi Santoso\",\n  \"participant_email\": \"budi@example.com\",\n  \"participant_phone\": \"081234567890\",\n  \"emergency_contact_name\": \"Ani Santoso\",\n  \"emergency_contact_phone\": \"081298765432\"\n}", "options": { "raw": { "language": "json" } } },
+                    "url": { "raw": "{{base_url}}/api/me/registrations", "host": ["{{base_url}}"], "path": ["api", "me", "registrations"] }
+                  },
+                  "status": "Conflict",
+                  "code": 409,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": false,\n  \"message\": \"Anda sudah terdaftar di event ini\"\n}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "description": "Endpoint admin — hanya dapat diakses oleh role=admin. Wajib menyertakan header: Authorization: Bearer {{token}}",
+      "item": [
+        {
+          "name": "Events",
+          "item": [
+            {
+              "name": "Create Event",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Jakarta Marathon 2027\",\n  \"subtitle\": \"Run the City\",\n  \"slug\": \"jakarta-marathon-2027\",\n  \"description\": \"Event lari terbesar di Jakarta dengan rute melewati jantung kota.\",\n  \"image_url\": \"https://example.com/images/jkm2027.jpg\",\n  \"event_date\": \"2027-02-21\",\n  \"start_time\": \"05:00\",\n  \"end_time\": \"12:00\",\n  \"registration_open_date\": \"2026-10-01\",\n  \"registration_close_date\": \"2027-02-14\",\n  \"location\": \"Monas, Jakarta Pusat\",\n  \"location_type\": \"outdoor\",\n  \"is_virtual\": false,\n  \"is_free\": false,\n  \"base_price\": 200000,\n  \"currency\": \"IDR\",\n  \"max_participants\": 1000,\n  \"organizer_name\": \"Runminders Events\",\n  \"highlights\": [\"Medali finisher\", \"Jersey peserta\", \"Goodie bag\"],\n  \"requirements\": [\"Sehat jasmani\", \"Minimal usia 18 tahun\"]\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/admin/events",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "events"]
+                }
+              },
+              "response": [
+                {
+                  "name": "201 Created - Event berhasil dibuat",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "body": { "mode": "raw", "raw": "{\n  \"title\": \"Jakarta Marathon 2027\",\n  \"slug\": \"jakarta-marathon-2027\",\n  \"event_date\": \"2027-02-21\",\n  \"location\": \"Monas, Jakarta Pusat\",\n  \"base_price\": 200000,\n  \"max_participants\": 1000\n}", "options": { "raw": { "language": "json" } } },
+                    "url": { "raw": "{{base_url}}/api/admin/events", "host": ["{{base_url}}"], "path": ["api", "admin", "events"] }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"message\": \"Event berhasil dibuat\",\n  \"data\": {\n    \"id\": \"new-event-uuid\",\n    \"title\": \"Jakarta Marathon 2027\",\n    \"slug\": \"jakarta-marathon-2027\",\n    \"is_active\": false,\n    \"created_at\": \"2026-07-01T10:00:00.000Z\"\n  }\n}"
+                },
+                {
+                  "name": "403 Forbidden - Bukan admin",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } },
+                    "url": { "raw": "{{base_url}}/api/admin/events", "host": ["{{base_url}}"], "path": ["api", "admin", "events"] }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": false,\n  \"message\": \"Akses ditolak: hanya admin yang diizinkan\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Update Event",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Bali Ultra Trail 2026 - Updated\",\n  \"subtitle\": \"Run Through Paradise\",\n  \"description\": \"Deskripsi baru yang diperbarui.\",\n  \"location\": \"Ubud, Bali\",\n  \"max_participants\": 600\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/admin/events/{{event_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "events", "{{event_id}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK - Event diperbarui",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "body": { "mode": "raw", "raw": "{\n  \"title\": \"Bali Ultra Trail 2026 - Updated\",\n  \"max_participants\": 600\n}", "options": { "raw": { "language": "json" } } },
+                    "url": { "raw": "{{base_url}}/api/admin/events/{{event_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "events", "{{event_id}}"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"message\": \"Event berhasil diperbarui\",\n  \"data\": {\n    \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"title\": \"Bali Ultra Trail 2026 - Updated\",\n    \"max_participants\": 600,\n    \"updated_at\": \"2026-07-01T11:00:00.000Z\"\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Delete Event",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/admin/events/{{event_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "events", "{{event_id}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK - Event dihapus",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "url": { "raw": "{{base_url}}/api/admin/events/{{event_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "events", "{{event_id}}"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"message\": \"Event berhasil dihapus\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "Toggle Event Status",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"is_active\": true\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/admin/events/{{event_id}}/toggle-status",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "events", "{{event_id}}", "toggle-status"]
+                },
+                "description": "Set is_active ke true untuk mengaktifkan, false untuk menonaktifkan"
+              },
+              "response": [
+                {
+                  "name": "200 OK - Event diaktifkan",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "body": { "mode": "raw", "raw": "{\n  \"is_active\": true\n}", "options": { "raw": { "language": "json" } } },
+                    "url": { "raw": "{{base_url}}/api/admin/events/{{event_id}}/toggle-status", "host": ["{{base_url}}"], "path": ["api", "admin", "events", "{{event_id}}", "toggle-status"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"message\": \"Event berhasil diaktifkan\",\n  \"data\": {\n    \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n    \"title\": \"Bali Ultra Trail 2026\",\n    \"is_active\": true\n  }\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Members",
+          "item": [
+            {
+              "name": "Get All Members",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/admin/members?page=1&limit=20",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "members"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "20" },
+                    { "key": "search", "value": "", "description": "Cari berdasarkan nama atau email", "disabled": true },
+                    { "key": "role", "value": "member", "description": "Filter role: member | admin", "disabled": true }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK - Daftar member",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "url": { "raw": "{{base_url}}/api/admin/members", "host": ["{{base_url}}"], "path": ["api", "admin", "members"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"data\": {\n    \"members\": [\n      {\n        \"id\": \"c1d2e3f4-a5b6-7890-cdef-012345678901\",\n        \"email\": \"budi@example.com\",\n        \"full_name\": \"Budi Santoso\",\n        \"role\": \"member\",\n        \"is_email_verified\": true,\n        \"phone_number\": \"081234567890\",\n        \"created_at\": \"2026-01-10T08:00:00.000Z\"\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 20,\n      \"total\": 150,\n      \"totalPages\": 8\n    }\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Get Member by ID",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/admin/members/{{member_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "members", "{{member_id}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK - Detail member",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "url": { "raw": "{{base_url}}/api/admin/members/{{member_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "members", "{{member_id}}"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"data\": {\n    \"member\": {\n      \"id\": \"c1d2e3f4-a5b6-7890-cdef-012345678901\",\n      \"email\": \"budi@example.com\",\n      \"full_name\": \"Budi Santoso\",\n      \"role\": \"member\",\n      \"is_email_verified\": true,\n      \"phone_number\": \"081234567890\",\n      \"avatar_url\": null,\n      \"created_at\": \"2026-01-10T08:00:00.000Z\",\n      \"last_login_at\": \"2026-07-01T09:30:00.000Z\"\n    }\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Update Member",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"full_name\": \"Budi Santoso\",\n  \"role\": \"member\",\n  \"is_email_verified\": true\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/admin/members/{{member_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "members", "{{member_id}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK - Member diperbarui",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "body": { "mode": "raw", "raw": "{\n  \"role\": \"admin\"\n}", "options": { "raw": { "language": "json" } } },
+                    "url": { "raw": "{{base_url}}/api/admin/members/{{member_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "members", "{{member_id}}"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"message\": \"Member berhasil diperbarui\",\n  \"data\": {\n    \"id\": \"c1d2e3f4-a5b6-7890-cdef-012345678901\",\n    \"email\": \"budi@example.com\",\n    \"full_name\": \"Budi Santoso\",\n    \"role\": \"admin\"\n  }\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Partners",
+          "item": [
+            {
+              "name": "Create Partner",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Adidas Indonesia\",\n  \"website\": \"https://adidas.com/id\",\n  \"logo_url\": \"https://example.com/logos/adidas.svg\",\n  \"contact_person\": \"Rina Putri\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/admin/partners",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "partners"]
+                }
+              },
+              "response": [
+                {
+                  "name": "201 Created - Partner ditambahkan",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "body": { "mode": "raw", "raw": "{\n  \"name\": \"Adidas Indonesia\",\n  \"website\": \"https://adidas.com/id\"\n}", "options": { "raw": { "language": "json" } } },
+                    "url": { "raw": "{{base_url}}/api/admin/partners", "host": ["{{base_url}}"], "path": ["api", "admin", "partners"] }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"message\": \"Partner berhasil ditambahkan\",\n  \"data\": {\n    \"id\": \"new-partner-uuid\",\n    \"name\": \"Adidas Indonesia\",\n    \"website\": \"https://adidas.com/id\",\n    \"is_active\": true,\n    \"created_at\": \"2026-07-01T10:00:00.000Z\"\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Update Partner",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Nike Indonesia\",\n  \"website\": \"https://nike.com/id\",\n  \"logo_url\": \"https://example.com/logos/nike-updated.svg\",\n  \"contact_person\": \"Andi Wijaya\",\n  \"is_active\": true\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/admin/partners/{{partner_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "partners", "{{partner_id}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK - Partner diperbarui",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "body": { "mode": "raw", "raw": "{\n  \"name\": \"Nike Indonesia\",\n  \"is_active\": false\n}", "options": { "raw": { "language": "json" } } },
+                    "url": { "raw": "{{base_url}}/api/admin/partners/{{partner_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "partners", "{{partner_id}}"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"message\": \"Partner berhasil diperbarui\",\n  \"data\": {\n    \"id\": \"d1e2f3a4-b5c6-7890-def0-123456789012\",\n    \"name\": \"Nike Indonesia\",\n    \"is_active\": false,\n    \"updated_at\": \"2026-07-01T11:00:00.000Z\"\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Delete Partner",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/admin/partners/{{partner_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "partners", "{{partner_id}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK - Partner dihapus",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "url": { "raw": "{{base_url}}/api/admin/partners/{{partner_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "partners", "{{partner_id}}"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"message\": \"Partner berhasil dihapus\"\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Reviews",
+          "description": "Admin dapat melihat semua review termasuk yang tidak aktif",
+          "item": [
+            {
+              "name": "Get All Reviews",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/admin/reviews?page=1&limit=20",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "reviews"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "20" },
+                    { "key": "is_active", "value": "false", "description": "Filter: true | false", "disabled": true }
+                  ]
+                },
+                "description": "Menampilkan semua review termasuk yang tidak aktif (berbeda dengan endpoint publik)"
+              },
+              "response": [
+                {
+                  "name": "200 OK - Semua review (termasuk tidak aktif)",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "url": { "raw": "{{base_url}}/api/admin/reviews", "host": ["{{base_url}}"], "path": ["api", "admin", "reviews"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"data\": {\n    \"reviews\": [\n      {\n        \"id\": \"e1f2a3b4-c5d6-7890-ef01-234567890123\",\n        \"reviewer_name\": \"Siti Rahayu\",\n        \"reviewer_title\": \"Pelari Maraton\",\n        \"content\": \"Platform yang sangat memudahkan registrasi event lari.\",\n        \"rating\": 5,\n        \"is_active\": true,\n        \"created_at\": \"2026-05-10T08:00:00.000Z\"\n      },\n      {\n        \"id\": \"e2f3a4b5-c6d7-8901-ef12-345678901234\",\n        \"reviewer_name\": \"Doni Kurniawan\",\n        \"reviewer_title\": \"Trail Runner\",\n        \"content\": \"Review yang belum dipublikasikan.\",\n        \"rating\": 4,\n        \"is_active\": false,\n        \"created_at\": \"2026-06-01T10:00:00.000Z\"\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 20,\n      \"total\": 12,\n      \"totalPages\": 1\n    }\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Get Review by ID",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/admin/reviews/{{review_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "reviews", "{{review_id}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK - Detail review",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "url": { "raw": "{{base_url}}/api/admin/reviews/{{review_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "reviews", "{{review_id}}"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"data\": {\n    \"review\": {\n      \"id\": \"e1f2a3b4-c5d6-7890-ef01-234567890123\",\n      \"reviewer_name\": \"Siti Rahayu\",\n      \"reviewer_title\": \"Pelari Maraton\",\n      \"content\": \"Platform yang sangat memudahkan registrasi event lari.\",\n      \"rating\": 5,\n      \"reviewer_photo_url\": \"https://example.com/photos/siti.jpg\",\n      \"is_active\": true,\n      \"created_at\": \"2026-05-10T08:00:00.000Z\"\n    }\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Create Review",
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reviewer_name\": \"Wahyu Hidayat\",\n  \"reviewer_title\": \"Ultra Marathon Runner\",\n  \"content\": \"Runminders adalah platform terbaik untuk mencari dan mendaftar event lari di Indonesia!\",\n  \"rating\": 5,\n  \"reviewer_photo_url\": \"https://example.com/photos/wahyu.jpg\",\n  \"is_active\": true\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/admin/reviews",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "reviews"]
+                }
+              },
+              "response": [
+                {
+                  "name": "201 Created - Review dibuat",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "body": { "mode": "raw", "raw": "{\n  \"reviewer_name\": \"Wahyu Hidayat\",\n  \"content\": \"Platform terbaik!\",\n  \"rating\": 5\n}", "options": { "raw": { "language": "json" } } },
+                    "url": { "raw": "{{base_url}}/api/admin/reviews", "host": ["{{base_url}}"], "path": ["api", "admin", "reviews"] }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"message\": \"Review berhasil ditambahkan\",\n  \"data\": {\n    \"id\": \"new-review-uuid\",\n    \"reviewer_name\": \"Wahyu Hidayat\",\n    \"rating\": 5,\n    \"is_active\": true,\n    \"created_at\": \"2026-07-01T10:00:00.000Z\"\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Update Review",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reviewer_name\": \"Siti Rahayu\",\n  \"reviewer_title\": \"Full Marathon Runner\",\n  \"content\": \"Konten review yang diperbarui.\",\n  \"rating\": 5,\n  \"is_active\": true\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/admin/reviews/{{review_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "reviews", "{{review_id}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK - Review diperbarui",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "body": { "mode": "raw", "raw": "{\n  \"is_active\": false\n}", "options": { "raw": { "language": "json" } } },
+                    "url": { "raw": "{{base_url}}/api/admin/reviews/{{review_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "reviews", "{{review_id}}"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"message\": \"Review berhasil diperbarui\",\n  \"data\": {\n    \"id\": \"e1f2a3b4-c5d6-7890-ef01-234567890123\",\n    \"reviewer_name\": \"Siti Rahayu\",\n    \"is_active\": false,\n    \"updated_at\": \"2026-07-01T11:00:00.000Z\"\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Delete Review",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/admin/reviews/{{review_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "reviews", "{{review_id}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK - Review dihapus",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "url": { "raw": "{{base_url}}/api/admin/reviews/{{review_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "reviews", "{{review_id}}"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"message\": \"Review berhasil dihapus\"\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Contacts",
+          "item": [
+            {
+              "name": "Get All Messages",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/admin/contacts?page=1&limit=20",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "contacts"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "20" },
+                    { "key": "status", "value": "new", "description": "Filter: new | read | replied", "disabled": true }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK - Daftar pesan kontak",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "url": { "raw": "{{base_url}}/api/admin/contacts", "host": ["{{base_url}}"], "path": ["api", "admin", "contacts"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"data\": {\n    \"messages\": [\n      {\n        \"id\": \"f1a2b3c4-d5e6-7890-f012-345678901234\",\n        \"name\": \"Budi Santoso\",\n        \"email\": \"budi@example.com\",\n        \"subject\": \"Pertanyaan tentang Event\",\n        \"message\": \"Halo, apakah masih ada slot untuk Bali Ultra Trail?\",\n        \"status\": \"new\",\n        \"created_at\": \"2026-06-28T14:00:00.000Z\"\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 20,\n      \"total\": 47,\n      \"totalPages\": 3\n    }\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Get Message by ID",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/admin/contacts/{{contact_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "contacts", "{{contact_id}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK - Detail pesan",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "url": { "raw": "{{base_url}}/api/admin/contacts/{{contact_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "contacts", "{{contact_id}}"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"data\": {\n    \"message\": {\n      \"id\": \"f1a2b3c4-d5e6-7890-f012-345678901234\",\n      \"name\": \"Budi Santoso\",\n      \"email\": \"budi@example.com\",\n      \"subject\": \"Pertanyaan tentang Event\",\n      \"message\": \"Halo, apakah masih ada slot untuk Bali Ultra Trail?\",\n      \"status\": \"read\",\n      \"created_at\": \"2026-06-28T14:00:00.000Z\",\n      \"updated_at\": \"2026-07-01T09:00:00.000Z\"\n    }\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Update Message Status",
+              "request": {
+                "method": "PATCH",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"replied\"\n}",
+                  "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/admin/contacts/{{contact_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "contacts", "{{contact_id}}"]
+                },
+                "description": "Update status pesan. Nilai yang valid: new | read | replied"
+              },
+              "response": [
+                {
+                  "name": "200 OK - Status diperbarui",
+                  "originalRequest": {
+                    "method": "PATCH",
+                    "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "body": { "mode": "raw", "raw": "{\n  \"status\": \"replied\"\n}", "options": { "raw": { "language": "json" } } },
+                    "url": { "raw": "{{base_url}}/api/admin/contacts/{{contact_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "contacts", "{{contact_id}}"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"message\": \"Status pesan berhasil diperbarui\",\n  \"data\": {\n    \"id\": \"f1a2b3c4-d5e6-7890-f012-345678901234\",\n    \"status\": \"replied\",\n    \"updated_at\": \"2026-07-01T11:00:00.000Z\"\n  }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Delete Message",
+              "request": {
+                "method": "DELETE",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/admin/contacts/{{contact_id}}",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "contacts", "{{contact_id}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK - Pesan dihapus",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "url": { "raw": "{{base_url}}/api/admin/contacts/{{contact_id}}", "host": ["{{base_url}}"], "path": ["api", "admin", "contacts", "{{contact_id}}"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"message\": \"Pesan berhasil dihapus\"\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Registrations",
+          "item": [
+            {
+              "name": "Get All Registrations",
+              "request": {
+                "method": "GET",
+                "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                "url": {
+                  "raw": "{{base_url}}/api/admin/registrations?page=1&limit=20",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "admin", "registrations"],
+                  "query": [
+                    { "key": "page", "value": "1" },
+                    { "key": "limit", "value": "20" },
+                    { "key": "event_id", "value": "{{event_id}}", "description": "Filter berdasarkan event", "disabled": true },
+                    { "key": "payment_status", "value": "paid", "description": "Filter: pending | paid | failed | cancelled", "disabled": true },
+                    { "key": "status", "value": "active", "description": "Filter: pending | active | cancelled", "disabled": true }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK - Daftar semua registrasi",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+                    "url": { "raw": "{{base_url}}/api/admin/registrations", "host": ["{{base_url}}"], "path": ["api", "admin", "registrations"] }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [{ "key": "Content-Type", "value": "application/json" }],
+                  "cookie": [],
+                  "body": "{\n  \"success\": true,\n  \"data\": {\n    \"registrations\": [\n      {\n        \"id\": \"b1c2d3e4-f5a6-7890-bcde-f12345678901\",\n        \"registration_number\": \"REG-2026-001234\",\n        \"status\": \"active\",\n        \"payment_status\": \"paid\",\n        \"total_amount\": 250000,\n        \"participant_full_name\": \"Budi Santoso\",\n        \"participant_email\": \"budi@example.com\",\n        \"created_at\": \"2026-06-15T10:00:00.000Z\",\n        \"event\": {\n          \"id\": \"a1b2c3d4-e5f6-7890-abcd-ef1234567890\",\n          \"title\": \"Bali Ultra Trail 2026\"\n        },\n        \"category\": {\n          \"name\": \"10K Race\"\n        }\n      }\n    ],\n    \"pagination\": {\n      \"page\": 1,\n      \"limit\": 20,\n      \"total\": 312,\n      \"totalPages\": 16\n    }\n  }\n}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "description": "Webhook dari Midtrans — endpoint ini dipanggil oleh Midtrans, bukan oleh frontend",
+      "item": [
+        {
+          "name": "Midtrans Webhook",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transaction_time\": \"2026-07-01 10:05:00\",\n  \"transaction_status\": \"settlement\",\n  \"transaction_id\": \"txn-abc123\",\n  \"status_message\": \"midtrans payment notification\",\n  \"status_code\": \"200\",\n  \"signature_key\": \"sha512-signature-from-midtrans\",\n  \"payment_type\": \"bank_transfer\",\n  \"order_id\": \"RM-2026-001234\",\n  \"merchant_id\": \"G123456789\",\n  \"gross_amount\": \"250000.00\",\n  \"fraud_status\": \"accept\",\n  \"currency\": \"IDR\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/payments/webhook",
+              "host": ["{{base_url}}"],
+              "path": ["api", "payments", "webhook"]
+            },
+            "description": "Endpoint ini dipanggil otomatis oleh Midtrans saat status transaksi berubah. Verifikasi signature SHA512 dilakukan di server."
+          },
+          "response": [
+            {
+              "name": "200 OK - Notifikasi diproses",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": { "mode": "raw", "raw": "{\n  \"transaction_status\": \"settlement\",\n  \"order_id\": \"RM-2026-001234\",\n  \"gross_amount\": \"250000.00\",\n  \"signature_key\": \"valid-sha512-hash\"\n}", "options": { "raw": { "language": "json" } } },
+                "url": { "raw": "{{base_url}}/api/payments/webhook", "host": ["{{base_url}}"], "path": ["api", "payments", "webhook"] }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Notifikasi berhasil diproses\"\n}"
+            },
+            {
+              "name": "400 Bad Request - Signature tidak valid",
+              "originalRequest": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "body": { "mode": "raw", "raw": "{\n  \"transaction_status\": \"settlement\",\n  \"order_id\": \"RM-2026-001234\",\n  \"signature_key\": \"invalid-signature\"\n}", "options": { "raw": { "language": "json" } } },
+                "url": { "raw": "{{base_url}}/api/payments/webhook", "host": ["{{base_url}}"], "path": ["api", "payments", "webhook"] }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "cookie": [],
+              "body": "{\n  \"success\": false,\n  \"message\": \"Signature tidak valid\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

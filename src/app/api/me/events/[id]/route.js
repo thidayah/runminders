@@ -1,83 +1,44 @@
 import { NextResponse } from 'next/server';
-import { supabaseServer } from "@/lib/supabase";
-import { verifyToken } from "@/lib/auth-utils";
+import { supabaseServer } from '@/lib/supabase';
+import { verifyAuth } from '@/lib/auth-utils';
 
 export async function GET(request, { params }) {
   try {
-    // 1. Ambil token dari header Authorization
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Token autentikasi diperlukan'
-        },
-        { status: 401 }
-      );
-    }
-
-    const token = authHeader.split(' ')[1];
-    const decoded = verifyToken(token);
-
+    const decoded = verifyAuth(request);
     if (!decoded) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'Token tidak valid atau telah kedaluwarsa'
-        },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, message: 'Token tidak valid' }, { status: 401 });
     }
 
-    // 2. Get registration ID 
-    const { id: registrationId } = await params;    
+    const { id: registrationId } = await params;
 
     if (!registrationId) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'ID registrasi diperlukan'
-        },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, message: 'ID registrasi diperlukan' }, { status: 400 });
     }
 
-    // 3. Get registration detail with event information
     const { data: registration, error: registrationError } = await supabaseServer
       .from('registrations')
       .select(`
         *,
-        event:events(
-          *,
-          categories:event_categories(*)
-        ),
-        category:event_categories(
-          *
-        )
+        event:events(*, categories:event_categories(*)),
+        category:event_categories(*)
       `)
       .eq('id', registrationId)
-      .eq('member_id', decoded.id) // Pastikan hanya member pemilik yang bisa akses
+      .eq('member_id', decoded.id)
       .single();
 
     if (registrationError || !registration) {
-      console.error('Error fetching registration detail:', registrationError);
       return NextResponse.json(
-        {
-          success: false,
-          message: 'Registrasi tidak ditemukan atau Anda tidak memiliki akses'
-        },
+        { success: false, message: 'Registrasi tidak ditemukan atau Anda tidak memiliki akses' },
         { status: 404 }
       );
     }
 
-    // 4. Get payment transactions for this registration
     const { data: paymentTransactions } = await supabaseServer
       .from('payment_transactions')
       .select('*')
       .eq('registration_id', registrationId)
       .order('created_at', { ascending: false });
 
-    // 5. Get event categories separately if not included
     let eventCategories = [];
     if (registration.event && !registration.event.categories) {
       const { data: categories } = await supabaseServer
@@ -91,7 +52,6 @@ export async function GET(request, { params }) {
       eventCategories = registration.event.categories;
     }
 
-    // 6. Format response data
     const responseData = {
       registration: {
         id: registration.id,
@@ -146,41 +106,23 @@ export async function GET(request, { params }) {
       payment_transactions: paymentTransactions || []
     };
 
-    return NextResponse.json({
-      success: true,
-      message: 'Detail event berhasil diambil',
-      data: responseData
-    });
+    return NextResponse.json({ success: true, message: 'Detail event berhasil diambil', data: responseData });
 
   } catch (error) {
-    console.error('Get my event detail error:', error);
-
-    return NextResponse.json(
-      {
-        success: false,
-        message: 'Terjadi kesalahan internal server'
-      },
-      { status: 500 }
-    );
+    console.error('GET me/events/[id] error:', error);
+    return NextResponse.json({ success: false, message: 'Terjadi kesalahan internal server' }, { status: 500 });
   }
 }
 
 export async function PATCH(request, { params }) {
   try {
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json({ success: false, message: 'Token autentikasi diperlukan' }, { status: 401 });
-    }
-
-    const token = authHeader.split(' ')[1];
-    const decoded = verifyToken(token);
+    const decoded = verifyAuth(request);
     if (!decoded) {
-      return NextResponse.json({ success: false, message: 'Token tidak valid atau telah kedaluwarsa' }, { status: 401 });
+      return NextResponse.json({ success: false, message: 'Token tidak valid' }, { status: 401 });
     }
 
     const { id: registrationId } = await params;
 
-    // 1. Ambil registrasi + pastikan milik member yang login
     const { data: registration, error: regError } = await supabaseServer
       .from('registrations')
       .select('*, event:events(is_free), category:event_categories(current_slots, waiting_list)')
@@ -192,7 +134,6 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ success: false, message: 'Registrasi tidak ditemukan' }, { status: 404 });
     }
 
-    // 2. Hanya boleh cancel jika masih pending
     if (registration.status !== 'pending' || registration.payment_status !== 'pending') {
       return NextResponse.json(
         { success: false, message: 'Hanya registrasi dengan status menunggu pembayaran yang dapat dibatalkan' },
@@ -200,18 +141,15 @@ export async function PATCH(request, { params }) {
       );
     }
 
-    // 3. Update status registrasi menjadi cancelled
     const { error: updateError } = await supabaseServer
       .from('registrations')
       .update({ status: 'cancelled', updated_at: new Date().toISOString() })
       .eq('id', registrationId);
 
     if (updateError) {
-      console.error('Error cancelling registration:', updateError);
       return NextResponse.json({ success: false, message: 'Gagal membatalkan registrasi' }, { status: 500 });
     }
 
-    // 4. Restore slot di event_categories
     const isFree = registration.event?.is_free;
     const cat = registration.category;
     const slotUpdate = isFree
@@ -223,7 +161,6 @@ export async function PATCH(request, { params }) {
       .update({ ...slotUpdate, updated_at: new Date().toISOString() })
       .eq('id', registration.category_id);
 
-    // 5. Decrement current_participants di events
     const { data: event } = await supabaseServer
       .from('events')
       .select('current_participants')
@@ -243,7 +180,7 @@ export async function PATCH(request, { params }) {
     return NextResponse.json({ success: true, message: 'Registrasi berhasil dibatalkan' });
 
   } catch (error) {
-    console.error('Cancel registration error:', error);
+    console.error('PATCH me/events/[id] error:', error);
     return NextResponse.json({ success: false, message: 'Terjadi kesalahan internal server' }, { status: 500 });
   }
 }

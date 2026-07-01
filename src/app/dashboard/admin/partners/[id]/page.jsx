@@ -6,11 +6,13 @@ import Link from 'next/link'
 import { Icon } from '@iconify/react'
 import Button from '@/components/ui/Button'
 import DashboardLayout from "@/components/layout/DashboardLayout"
+import { useAuth } from '@/hooks/useAuth'
 
 export default function PartnerFormPage() {
   const router = useRouter()
   const params = useParams()
   const id = params?.id
+  const { token } = useAuth()
 
   const isEditMode = id && id !== 'create'
 
@@ -145,7 +147,7 @@ export default function PartnerFormPage() {
     setApiResponse(null)
 
     try {
-      const url = isEditMode ? `/api/partners/${id}` : '/api/partners'
+      const url = isEditMode ? `/api/admin/partners/${id}` : '/api/admin/partners'
       const method = isEditMode ? 'PUT' : 'POST'
 
       const payload = {
@@ -164,6 +166,7 @@ export default function PartnerFormPage() {
         method,
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(payload)
       })

@@ -5,8 +5,10 @@ import Link from 'next/link'
 import { Icon } from '@iconify/react'
 import Button from '@/components/ui/Button'
 import DashboardLayout from "@/components/layout/DashboardLayout"
+import { useAuth } from '@/hooks/useAuth'
 
 export default function AdminPartnersPage() {
+  const { token } = useAuth()
   const [partners, setPartners] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -91,10 +93,11 @@ export default function AdminPartnersPage() {
 
   const handleToggleStatus = async (partnerId, currentStatus) => {
     try {
-      const response = await fetch(`/api/partners/${partnerId}`, {
+      const response = await fetch(`/api/admin/partners/${partnerId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ is_active: !currentStatus })
       })
@@ -119,8 +122,9 @@ export default function AdminPartnersPage() {
     }
 
     try {
-      const response = await fetch(`/api/partners/${partnerId}`, {
-        method: 'DELETE'
+      const response = await fetch(`/api/admin/partners/${partnerId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
       })
 
       const result = await response.json()

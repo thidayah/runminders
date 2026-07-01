@@ -65,7 +65,7 @@ export default function ProfilePage() {
     setMessage({ type: '', text: '' })
 
     try {
-      const response = await fetch('/api/members/profile', {
+      const response = await fetch('/api/me/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -135,7 +135,7 @@ export default function ProfilePage() {
     }
 
     try {
-      const response = await fetch('/api/members/password', {
+      const response = await fetch('/api/me/password', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

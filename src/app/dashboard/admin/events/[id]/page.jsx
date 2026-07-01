@@ -6,11 +6,13 @@ import Link from 'next/link'
 import { Icon } from '@iconify/react'
 import Button from '@/components/ui/Button'
 import DashboardLayout from "@/components/layout/DashboardLayout"
+import { useAuth } from '@/hooks/useAuth'
 
 export default function EventFormPage() {
   const router = useRouter()
   const params = useParams()
   const id = params?.id
+  const { token } = useAuth()
 
   const isEditMode = id && id !== 'create'
 
@@ -347,7 +349,7 @@ export default function EventFormPage() {
     setApiResponse(null)
 
     try {
-      const url = isEditMode ? `/api/events/${id}` : '/api/events'
+      const url = isEditMode ? `/api/admin/events/${id}` : '/api/admin/events'
       const method = isEditMode ? 'PUT' : 'POST'
       const payload = preparePayload()
 
@@ -355,6 +357,7 @@ export default function EventFormPage() {
         method,
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(payload)
       })
