@@ -1,19 +1,19 @@
 import { NextResponse } from 'next/server';
-import { verifyToken } from '@/lib/auth-utils';
+import { verifyTokenEdge } from '@/lib/auth-edge';
 
-export function middleware(request) {
+export async function proxy(request) {
   const { pathname } = request.nextUrl;
 
   // Guard /api/admin/* — hanya admin
   if (pathname.startsWith('/api/admin/')) {
     const authHeader = request.headers.get('authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    if (!authHeader?.startsWith('Bearer ')) {
       return NextResponse.json(
         { success: false, message: 'Token autentikasi diperlukan' },
         { status: 401 }
       );
     }
-    const decoded = verifyToken(authHeader.split(' ')[1]);
+    const decoded = await verifyTokenEdge(authHeader.split(' ')[1]);
     if (!decoded) {
       return NextResponse.json(
         { success: false, message: 'Token tidak valid atau telah kedaluwarsa' },
@@ -32,13 +32,13 @@ export function middleware(request) {
   // Guard /api/me/* — semua user yang sudah login
   if (pathname.startsWith('/api/me/')) {
     const authHeader = request.headers.get('authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    if (!authHeader?.startsWith('Bearer ')) {
       return NextResponse.json(
         { success: false, message: 'Token autentikasi diperlukan' },
         { status: 401 }
       );
     }
-    const decoded = verifyToken(authHeader.split(' ')[1]);
+    const decoded = await verifyTokenEdge(authHeader.split(' ')[1]);
     if (!decoded) {
       return NextResponse.json(
         { success: false, message: 'Token tidak valid atau telah kedaluwarsa' },

@@ -41,7 +41,7 @@ docs/
 └── Runminders API.postman_collection.json  # Dokumentasi API (Postman v2.1)
 
 src/
-├── middleware.js         # Edge guard: validasi JWT untuk /api/me/* dan /api/admin/*
+├── proxy.js              # Edge guard: validasi JWT untuk /api/me/* dan /api/admin/*
 ├── app/
 │   ├── api/              # API routes (server-side) — intent-based prefix
 │   │   ├── admin/        # Khusus admin (role=admin + Bearer token)
@@ -97,7 +97,8 @@ src/
 │   └── useAuth.js        # Hook auth client-side
 └── lib/
     ├── supabase.js        # Supabase server client (service role)
-    ├── auth-utils.js      # hashPassword, verifyToken, isValidEmail, dll.
+    ├── auth-utils.js      # hashPassword, verifyToken, isValidEmail, dll. (Node.js only)
+    ├── auth-edge.js       # verifyTokenEdge via jose — Edge Runtime only (proxy.js)
     ├── auth-storage.js    # AES-encrypted localStorage/sessionStorage
     ├── email.js           # Fungsi kirim email via Resend
     ├── midtrans.js        # createSnapTransaction, verifySignature
@@ -141,10 +142,12 @@ Tabel utama:
 - `verifyAuth(request)` — decode JWT dari header `Authorization: Bearer <token>`, kembalikan payload atau `null`
 - `verifyAdmin(request)` — sama seperti `verifyAuth` tapi hanya lolos jika `role === 'admin'`
 
-**Middleware (`src/middleware.js`):**
-- Berjalan di edge sebelum semua request ke `/api/me/*` dan `/api/admin/*`
+**Proxy (`src/proxy.js`):**
+- Berjalan di Edge Runtime sebelum semua request ke `/api/me/*` dan `/api/admin/*`
 - Cek `Authorization` header; kembalikan 401 jika token tidak ada/tidak valid
 - Untuk `/api/admin/*` tambahan cek `role === 'admin'`, kembalikan 403 jika bukan admin
+- Verifikasi JWT menggunakan `verifyTokenEdge` dari `src/lib/auth-edge.js` (pakai `jose`, Edge-compatible)
+- Jangan import `auth-utils.js` dari sini — `bcryptjs`, `crypto`, `jsonwebtoken` tidak kompatibel dengan Edge Runtime
 
 ---
 
