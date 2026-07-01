@@ -18,8 +18,8 @@ export default function FaqSection() {
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200">
       {/* Category Tabs */}
-      <div className="border-b border-gray-200">
-        <div className="flex overflow-x-auto">
+      <div className="relative border-b border-gray-200">
+        <div className="flex overflow-x-auto scroll-smooth [&::-webkit-scrollbar]:hidden [scrollbar-width:none]">
           {faqCategories.map((category) => (
             <button
               key={category.id}
@@ -34,6 +34,7 @@ export default function FaqSection() {
             </button>
           ))}
         </div>
+        <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-white to-transparent" />
       </div>
 
       {/* FAQ Content */}

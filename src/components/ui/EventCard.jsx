@@ -138,7 +138,7 @@ export default function EventCard({ event, loading = false }) {
     <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 group">
       {/* Event Image */}
       <Link href={`/events/${event.slug || event.id}`}>
-        <div className="relative aspect-video overflow-hidden cursor-pointer">
+        <div className="relative h-40 md:h-auto md:aspect-video overflow-hidden cursor-pointer">
           {/* Background Image */}
           <div
             className="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110"

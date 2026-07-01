@@ -6,13 +6,13 @@ export default function ContactInfo() {
     {
       icon: 'mdi:email',
       title: 'Email',
-      value: process.env.APP_MAIL,
+      value: process.env.NEXT_PUBLIC_APP_MAIL,
       description: 'Kami membalas dalam 1x24 jam'
     },
     {
       icon: 'mdi:phone',
       title: 'Telepon',
-      value: `+${process.env.APP_PHONE}`,
+      value: `+${process.env.NEXT_PUBLIC_APP_PHONE}`,
       description: 'Senin - Jumat, 09:00 - 18:00'
     },
   ]
@@ -21,9 +21,9 @@ export default function ContactInfo() {
     {
       icon: 'simple-icons:whatsapp',
       name: 'Whatsapp',
-      url: `${process.env.APP_WHATSAPP}?text=${encodeURIComponent('Halo Runminders, aku mau bertanya nih..')}`
+      url: `${process.env.NEXT_PUBLIC_APP_WHATSAPP}?text=${encodeURIComponent('Halo Runminders, aku mau bertanya nih..')}`
     },
-    { icon: 'simple-icons:instagram', name: 'Instagram', url: process.env.APP_INSTAGRAM },
+    { icon: 'simple-icons:instagram', name: 'Instagram', url: process.env.NEXT_PUBLIC_APP_INSTAGRAM },
   ]
 
   return (
