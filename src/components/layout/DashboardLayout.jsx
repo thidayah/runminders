@@ -63,6 +63,12 @@ const adminMenu = [
     exact: false
   },
   {
+    title: 'Review',
+    href: '/dashboard/admin/reviews',
+    icon: 'mdi:star-outline',
+    exact: false
+  },
+  {
     title: 'Kontak',
     href: '/dashboard/admin/contacts',
     icon: 'mdi:email-outline',
