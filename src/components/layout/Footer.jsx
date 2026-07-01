@@ -15,7 +15,7 @@ export default function Footer() {
           <div>
             <div className="text-2xl font-bold text-accent mb-4">Runminders</div>
             <p className="text-gray-300">
-              Platform terbaru untuk menemukan dan mendaftar event lari di Indonesia.
+              Daftarkan event larimu atau temukan event di kotamu — satu platform untuk organizer dan pelari.
             </p>
           </div>
 
