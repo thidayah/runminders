@@ -2,10 +2,10 @@ import { Icon } from '@iconify/react'
 import Link from "next/link"
 
 export default function Footer() {
-  const appMail = process.env.APP_MAIL
-  const appPhone = process.env.APP_PHONE
-  const appWhatsapp = process.env.APP_WHATSAPP
-  const appInstagram = process.env.APP_INSTAGRAM
+  const appMail = process.env.NEXT_PUBLIC_APP_MAIL
+  const appPhone = process.env.NEXT_PUBLIC_APP_PHONE
+  const appWhatsapp = process.env.NEXT_PUBLIC_APP_WHATSAPP
+  const appInstagram = process.env.NEXT_PUBLIC_APP_INSTAGRAM
 
   return (
     <footer className="bg-neutral-800 text-white">

@@ -344,7 +344,7 @@ export default function Header() {
             className="md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            <Icon icon={`mdi:hamburger-${!isMenuOpen ? 'close' : 'open'}`} className={` size-8 transition-all duration-300 ${getTextColor()}`} />
+            <Icon icon={isMenuOpen ? "mdi:close" : "mdi:menu"} className={`size-8 transition-all duration-300 ${getTextColor()}`} />
           </button>
         </nav>
 

@@ -227,7 +227,7 @@ export default function EventRegisterPage() {
   // Main registration form
   return (
     <Layout>
-      <div className="min-h-screen bg-gray-50 pb-16">
+      <div className="min-h-screen bg-gray-50 pb-28 md:pb-16">
         <div className="relative bg-gradient-to-br bg-primary via-primary to-white">
           {/* Background Gradient */}
           <div className="h-64 bg-cover bg-center" >
@@ -282,7 +282,7 @@ export default function EventRegisterPage() {
                   <p className="text-gray-200 mt-1">Lengkapi data diri Anda untuk mendaftar event</p>
                 </div> */}
 
-                <form onSubmit={handleSubmit} className="p-6">
+                <form id="register-form" onSubmit={handleSubmit} className="p-6">
                   {/* Category Selection */}
                   <div className="mb-8">
                     <h2 className="text-xl font-semibold text-gray-800 mb-4">1. Pilih Kategori</h2>
@@ -671,6 +671,27 @@ export default function EventRegisterPage() {
               </div>
             </div>
           </div>
+        </div>
+      </div>
+      {/* Mobile Sticky Summary Bar */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-[0_-2px_12px_rgba(0,0,0,0.08)] px-4 py-3">
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xs text-gray-500 truncate">
+              {selectedCategory ? selectedCategory.name : 'Belum memilih kategori'}
+            </p>
+            <p className="font-bold text-primary text-base leading-tight">
+              {selectedCategory ? getPrice() : '—'}
+            </p>
+          </div>
+          <button
+            type="submit"
+            form="register-form"
+            disabled={!selectedCategory || submitting}
+            className="shrink-0 bg-primary text-white font-semibold px-4 py-2.5 rounded-xl text-sm disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
+          >
+            {submitting ? 'Memproses...' : event?.is_free ? 'Daftar Gratis' : 'Lanjutkan ke Pembayaran'}
+          </button>
         </div>
       </div>
     </Layout>

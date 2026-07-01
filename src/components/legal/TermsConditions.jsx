@@ -212,7 +212,7 @@ export default function TermsConditions() {
         <div className="bg-gray-50 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-3">
             <span className="font-semibold text-gray-800">Email:</span>
-            <a href={`mailto:${process.env.APP_MAIL}`} className="text-gray-700 hover:underline cursor-pointer">{process.env.APP_MAIL}</a>
+            <a href={`mailto:${process.env.NEXT_PUBLIC_APP_MAIL}`} className="text-gray-700 hover:underline cursor-pointer">{process.env.NEXT_PUBLIC_APP_MAIL}</a>
           </div>
           <div className="flex items-center gap-3">
             <span className="font-semibold text-gray-800">Website:</span>
