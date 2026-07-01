@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { useSearchParams } from 'next/navigation'
+// import { useSearchParams } from 'next/navigation'
 import EventList from '@/components/events/EventList'
 import Layout from "@/components/layout/Layout"
 
@@ -41,7 +41,7 @@ import Layout from "@/components/layout/Layout"
 // ]
 
 export default function EventsPage() {
-  const searchParams = useSearchParams()
+  // const searchParams = useSearchParams()
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
@@ -54,7 +54,10 @@ export default function EventsPage() {
   const [error, setError] = useState(null)
   const limit = 9
 
-  const initialCategory = searchParams.get('category')
+  // const initialCategory = searchParams.get('category')
+
+  const queryParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '')
+  const initialCategory = queryParams.get('category')
 
   // State untuk filter yang akan dikirim ke API
   const [filters, setFilters] = useState({
