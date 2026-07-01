@@ -62,7 +62,7 @@ export default function AdminContactsPage() {
       })
       if (debouncedSearch) params.append('search', debouncedSearch)
 
-      const response = await fetch(`/api/contact?${params.toString()}`, {
+      const response = await fetch(`/api/admin/contacts?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
 

@@ -40,8 +40,34 @@ export function isStrongPassword(password) {
 // Validate jwt token
 export function verifyToken(token) {
   try {
-    return jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+    const secret = process.env.JWT_SECRET;
+    if (!secret) throw new Error('JWT_SECRET env variable is not set');
+    return jwt.verify(token, secret);
   } catch (error) {
     return null;
   }
 };
+
+// Verify admin token — returns { decoded } or { error, status }
+export async function verifyAdmin(request) {
+  const authHeader = request.headers.get('authorization');
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return { error: 'Token autentikasi diperlukan', status: 401 };
+  }
+  const token = authHeader.split(' ')[1];
+  const decoded = verifyToken(token);
+  if (!decoded) {
+    return { error: 'Token tidak valid atau telah kedaluwarsa', status: 401 };
+  }
+  if (decoded.role !== 'admin') {
+    return { error: 'Akses ditolak. Hanya admin yang dapat mengakses resource ini', status: 403 };
+  }
+  return { decoded };
+}
+
+// Verify any authenticated user — returns decoded or null
+export function verifyAuth(request) {
+  const authHeader = request.headers.get('authorization');
+  if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
+  return verifyToken(authHeader.split(' ')[1]);
+}

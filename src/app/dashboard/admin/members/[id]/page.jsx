@@ -40,7 +40,7 @@ export default function MemberDetailPage() {
         return
       }
 
-      const response = await fetch(`/api/members/${id}`, {
+      const response = await fetch(`/api/admin/members/${id}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -90,7 +90,7 @@ export default function MemberDetailPage() {
     try {
       // const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token')
       
-      const response = await fetch(`/api/members/${id}`, {
+      const response = await fetch(`/api/admin/members/${id}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

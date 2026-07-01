@@ -7,7 +7,7 @@ import Button from "@/components/ui/Button"
 import Link from "next/link"
 import { Icon } from "@iconify/react"
 import { formatCurrency, formatDate } from "@/lib/formatters-utils"
-import { getUser } from "@/lib/auth-storage"
+import { getUser, getToken } from "@/lib/auth-storage"
 
 export default function EventRegisterPage() {
   const user = getUser()
@@ -152,10 +152,11 @@ export default function EventRegisterPage() {
       setSubmitting(true)
       setError(null)
 
-      const response = await fetch('/api/registrations', {
+      const response = await fetch('/api/me/registrations', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getToken()}`,
         },
         body: JSON.stringify(formData)
       })

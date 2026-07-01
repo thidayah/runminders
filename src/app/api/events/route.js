@@ -62,12 +62,6 @@ export async function GET(request) {
       query = query.lte('base_price', parseInt(maxPrice));
     }
 
-    // // Apply category filter
-    // if (categories) {
-    //   const categoryArray = categories.split(',');
-    //   query = query.overlaps('categories', categoryArray);
-    // }
-
     // Apply category filter
     if (categories) {
       const categoryArray = categories.split(',');
@@ -80,12 +74,6 @@ export async function GET(request) {
       // Gunakan .or() untuk menggabungkan semua kondisi category
       query = query.or(categoryConditions.join(','));
     }
-
-    // Apply difficulty filter (SOON)
-    // if (difficulties) {
-    //   const difficultyArray = difficulties.split(',');
-    //   query = query.in('difficulty', difficultyArray);
-    // }
 
     // Apply location filter
     if (locations) {
@@ -136,11 +124,6 @@ export async function GET(request) {
       countQuery.lte('base_price', parseInt(maxPrice));
     }
 
-    // if (categories) {
-    //   const categoryArray = categories.split(',');
-    //   countQuery.overlaps('categories', categoryArray);
-    // }
-
     if (categories) {
       const categoryArray = categories.split(',');
       const categoryConditions = categoryArray.map(title => {
@@ -148,11 +131,6 @@ export async function GET(request) {
       });
       query = query.or(categoryConditions.join(','));
     }
-
-    // if (difficulties) {
-    //   const difficultyArray = difficulties.split(',');
-    //   countQuery.in('difficulty', difficultyArray);
-    // }
 
     if (locations) {
       const locationArray = locations.split(',');
@@ -169,26 +147,16 @@ export async function GET(request) {
 
     // Apply sorting based on sortBy parameter
     if (sortBy === 'base_price') {
-      // Sort by lowest price (base_price) is true, by highest price (base_price) is false
       query = query.order('base_price', { ascending: sortOrder === 'asc' });
-      // } else if (sortBy === 'views') {
-      // Sort by views or you can use a custom popularity metric (SOON)
-      // If you have a popularity/views/registration_count field, use that. Otherwise, use views
-      // query = query.order('views', { ascending: sortOrder === 'asc' });
     } else if (sortBy === 'current_participants') {
-      // Sort by current_participants
       query = query.order('current_participants', { ascending: sortOrder === 'asc' });
     } else if (sortBy === 'event_date') {
-      // Sort by event date
       query = query.order('event_date', { ascending: sortOrder === 'asc' });
     } else if (sortBy === 'created_at') {
-      // Sort by created date
       query = query.order('created_at', { ascending: sortOrder === 'asc' });
     } else if (sortBy === 'title') {
-      // Sort by title
       query = query.order('title', { ascending: sortOrder === 'asc' });
     } else {
-      // Default sorting by event date
       query = query.order('event_date', { ascending: true });
     }
 
@@ -274,247 +242,3 @@ export async function GET(request) {
     );
   }
 }
-
-export async function POST(request) {
-  try {
-    const data = await request.json()
-
-    // Validasi field wajib
-    if (!data.title || !data.event_date) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Judul event dan tanggal event wajib diisi'
-        },
-        { status: 400 }
-      )
-    }
-
-    // Validasi categories
-    if (!data.categories || !Array.isArray(data.categories) || data.categories.length === 0) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Minimal harus ada 1 kategori untuk event'
-        },
-        { status: 400 }
-      )
-    }
-
-    // Validasi setiap kategori
-    for (let i = 0; i < data.categories.length; i++) {
-      const category = data.categories[i]
-      if (!category.name || !category.price || !category.max_slots) {
-        return NextResponse.json(
-          {
-            success: false,
-            error: `Kategori ke-${i + 1}: Nama, harga, dan jumlah slot maksimal wajib diisi`
-          },
-          { status: 400 }
-        )
-      }
-    }
-
-    // Generate slug dari judul
-    const generateSlug = (title) => {
-      return title
-        .toLowerCase()
-        .replace(/[^\w\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/--+/g, '-')
-        .trim()
-    }
-
-    // Cek slug unik
-    const checkSlugUnique = async (slug) => {
-      const { data, error } = await supabaseServer
-        .from('events')
-        .select('id')
-        .eq('slug', slug)
-
-      return data.length === 0
-    }
-
-    const slug = data.slug || generateSlug(data.title)
-
-    // Cek apakah slug sudah digunakan
-    const isSlugUnique = await checkSlugUnique(slug)
-    if (!isSlugUnique) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Slug sudah digunakan. Silakan pilih judul yang berbeda atau tambahkan angka di belakang'
-        },
-        { status: 409 }
-      )
-    }
-
-    const isValidEmbedUrl = (url) => {
-      try {
-        const parsed = new URL(url);
-        return (
-          parsed.hostname === 'www.google.com' &&
-          parsed.pathname.startsWith('/maps/embed') &&
-          parsed.searchParams.has('pb')
-        );
-      } catch {
-        return false;
-      }
-    }
-
-    const extractValidEmbedSrc = (iframeString) => {      
-      const match = iframeString.match(/src="([^"]+)"/);
-      if (!match) return null;
-      const src = match[1];
-      return isValidEmbedUrl(src) ? src : null;
-    }
-
-    // Siapkan data event
-    const eventData = {
-      title: data.title,
-      subtitle: data.subtitle || null,
-      description: data.description || null,
-      image_file: data.image_file || null,
-      image_url: data.image_url || null,
-      event_date: data.event_date,
-      event_time: data.event_time || null,
-      location: data.location || null,
-      // location_link: data.location_link || null, 
-      location_link: extractValidEmbedSrc(data.location_link) || null, // Embed link
-      address: data.address || null,
-      coordinates: data.coordinates || null,
-      is_virtual: data.is_virtual || false,
-      location_type: data.location_type || 'offline',
-      is_free: data.is_free || false,
-      base_price: data.base_price || 0,
-      currency: data.currency || 'IDR',
-      has_early_bird: data.has_early_bird || false,
-      early_bird_price: data.early_bird_price || null,
-      early_bird_end_date: data.early_bird_end_date || null,
-      max_participants: data.max_participants || null,
-      current_participants: 0,
-      highlights: data.highlights || [],
-      schedule: data.schedule || [],
-      requirements: data.requirements || [],
-      is_active: true,
-      registration_open_date: data.registration_open_date || null,
-      registration_close_date: data.registration_close_date || null,
-      slug: slug,
-      organizer_name: data.organizer_name || null,
-      // created_at: new Date().toISOString(),
-      // updated_at: new Date().toISOString()
-    }
-    console.log(extractValidEmbedSrc(data.location_link));
-
-    // Insert event ke database
-    const { data: event, error: eventError } = await supabaseServer
-      .from('events')
-      .insert(eventData)
-      .select()
-      .single()
-
-    if (eventError) {
-      console.error('Error membuat event:', eventError)
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Gagal membuat event. Silakan coba lagi.'
-        },
-        { status: 500 }
-      )
-    }
-
-    // Siapkan data categories
-    const categoriesToInsert = data.categories.map((category, index) => ({
-      event_id: event.id,
-      name: category.name,
-      description: category.description || null,
-      distance: category.distance || null,
-      price: category.price,
-      early_bird_price: category.early_bird_price || null,
-      max_slots: category.max_slots,
-      current_slots: 0,
-      waiting_list: 0,
-      is_active: true,
-      display_order: category.display_order || index + 1,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    }))
-
-    // Insert categories ke database
-    const { data: categories, error: categoriesError } = await supabaseServer
-      .from('event_categories')
-      .insert(categoriesToInsert)
-      .select()
-
-    if (categoriesError) {
-      console.error('Error membuat kategori:', categoriesError)
-
-      // Rollback: hapus event yang sudah dibuat
-      await supabaseServer
-        .from('events')
-        .delete()
-        .eq('id', event.id)
-
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Gagal membuat kategori event. Event telah dibatalkan.'
-        },
-        { status: 500 }
-      )
-    }
-
-    // Jika ada features, insert ke category_features
-    const featuresToInsert = []
-
-    data.categories.forEach((category, categoryIndex) => {
-      if (category.features && Array.isArray(category.features) && category.features.length > 0 && categories[categoryIndex]) {
-        category.features.forEach((feature, featureIndex) => {
-          if (feature && feature.trim() !== '') {
-            featuresToInsert.push({
-              category_id: categories[categoryIndex].id,
-              feature: feature.trim(),
-              display_order: featureIndex + 1,
-              created_at: new Date().toISOString()
-            })
-          }
-        })
-      }
-    })
-
-    if (featuresToInsert.length > 0) {
-      const { error: featuresError } = await supabaseServer
-        .from('category_features')
-        .insert(featuresToInsert)
-
-      if (featuresError) {
-        console.warn('Gagal menyimpan fitur kategori:', featuresError)
-        // Lanjutkan tanpa error karena features opsional
-      }
-    }
-
-    // Response sukses
-    return NextResponse.json({
-      success: true,
-      message: 'Event berhasil dibuat!',
-      data: {
-        event: event,
-        categories: categories,
-        total_categories: categories.length
-      }
-    }, { status: 201 })
-
-  } catch (error) {
-    console.error('Error membuat event:', error)
-
-    return NextResponse.json(
-      {
-        success: false,
-        error: 'Terjadi kesalahan internal server. Silakan coba lagi nanti.'
-      },
-      { status: 500 }
-    )
-  }
-}
-

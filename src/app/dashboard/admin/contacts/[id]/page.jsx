@@ -42,7 +42,7 @@ export default function AdminContactDetailPage() {
       setIsLoading(true)
       setError(null)
 
-      const response = await fetch(`/api/contact/${id}`, {
+      const response = await fetch(`/api/admin/contacts/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       const result = await response.json()
@@ -68,7 +68,7 @@ export default function AdminContactDetailPage() {
 
     setIsUpdating(true)
     try {
-      const response = await fetch(`/api/contact/${id}`, {
+      const response = await fetch(`/api/admin/contacts/${id}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -93,7 +93,7 @@ export default function AdminContactDetailPage() {
   const handleDelete = async () => {
     setIsDeleting(true)
     try {
-      const response = await fetch(`/api/contact/${id}`, {
+      const response = await fetch(`/api/admin/contacts/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       })

@@ -27,7 +27,7 @@ export default function MyEventDetailPage() {
     const fetchEventDetail = async () => {
       setIsLoading(true)
       try {
-        const response = await fetch(`/api/my-events/${registrationId}`, {
+        const response = await fetch(`/api/me/events/${registrationId}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -95,7 +95,7 @@ export default function MyEventDetailPage() {
   const handleCancel = async () => {
     setIsCancelling(true)
     try {
-      const response = await fetch(`/api/my-events/${registrationId}`, {
+      const response = await fetch(`/api/me/events/${registrationId}`, {
         method: 'PATCH',
         headers: { 'Authorization': `Bearer ${token}` }
       })

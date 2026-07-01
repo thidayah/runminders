@@ -40,7 +40,7 @@ export default function MyEventsPage() {
         ...(filters.search && { search: filters.search })
       })
 
-      const response = await fetch(`/api/my-events?${params}`, {
+      const response = await fetch(`/api/me/events?${params}`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
