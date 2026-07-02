@@ -1,7 +1,67 @@
 import { NextResponse } from 'next/server';
 import { supabaseServer } from '@/lib/supabase';
+import { verifyAdmin } from '@/lib/auth-utils';
 
-// Middleware sudah memvalidasi admin — handler langsung ke logika bisnis
+export async function GET(request) {
+  const admin = await verifyAdmin(request);
+  if (!admin) return NextResponse.json({ success: false, message: 'Unauthorized' }, { status: 401 });
+
+  try {
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page')) || 1;
+    const limit = parseInt(searchParams.get('limit')) || 20;
+    const offset = (page - 1) * limit;
+    const status = searchParams.get('status') || 'all';
+    const locationType = searchParams.get('location_type');
+    const isFree = searchParams.get('is_free');
+    const search = searchParams.get('search');
+    const sortBy = searchParams.get('sort_by') || 'created_at';
+    const sortOrder = searchParams.get('sort_order') || 'desc';
+
+    let query = supabaseServer
+      .from('events')
+      .select('id,title,slug,image_url,event_date,location,location_type,is_virtual,is_free,base_price,current_participants,max_participants,is_active,created_at,organizer_name', { count: 'exact' });
+
+    if (status === 'active') query = query.eq('is_active', true);
+    else if (status === 'inactive') query = query.eq('is_active', false);
+
+    if (locationType) query = query.eq('location_type', locationType);
+    if (isFree !== null && isFree !== undefined && isFree !== '') query = query.eq('is_free', isFree === 'true');
+    if (search) query = query.or(`title.ilike.%${search}%,location.ilike.%${search}%,organizer_name.ilike.%${search}%`);
+
+    query = query.order(sortBy, { ascending: sortOrder === 'asc' }).range(offset, offset + limit - 1);
+
+    const { data: events, error, count } = await query;
+
+    if (error) {
+      console.error('Error fetching admin events:', error);
+      return NextResponse.json({ success: false, message: 'Gagal mengambil data event' }, { status: 500 });
+    }
+
+    const totalPages = Math.ceil(count / limit);
+
+    return NextResponse.json({
+      success: true,
+      message: 'Data event berhasil diambil',
+      data: {
+        items: events || [],
+        pagination: {
+          current_page: page,
+          per_page: limit,
+          total_items: count || 0,
+          total_pages: totalPages,
+          has_next_page: page < totalPages,
+          has_previous_page: page > 1
+        },
+        filters: { status, location_type: locationType, is_free: isFree, search, sort_by: sortBy, sort_order: sortOrder }
+      }
+    });
+
+  } catch (error) {
+    console.error('GET admin/events error:', error);
+    return NextResponse.json({ success: false, message: 'Terjadi kesalahan internal server' }, { status: 500 });
+  }
+}
 
 export async function POST(request) {
   try {
