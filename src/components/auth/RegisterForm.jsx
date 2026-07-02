@@ -142,7 +142,7 @@ export default function RegisterForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
       {/* API Response Notification */}
       {apiResponse && (
         <div className={`p-4 rounded-lg ${apiResponse.success ? 'bg-green-50 border border-green-200 text-green-700' : 'bg-red-50 border border-red-200 text-red-700'}`}>
@@ -188,7 +188,7 @@ export default function RegisterForm() {
           required
           value={formData.fullName}
           onChange={handleChange}
-          className={`w-full px-4 py-3 border ${errors.fullName ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-primary focus:outline-0 focus:border-transparent transition-all duration-200`}
+          className={`w-full px-4 py-2.5 border ${errors.fullName ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-primary focus:outline-0 focus:border-transparent transition-all duration-200`}
           placeholder="Masukkan nama lengkap Anda"
         />
         {errors.fullName && (
@@ -209,7 +209,7 @@ export default function RegisterForm() {
           required
           value={formData.email}
           onChange={handleChange}
-          className={`w-full px-4 py-3 border ${errors.email ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-primary focus:outline-0 focus:border-transparent transition-all duration-200`}
+          className={`w-full px-4 py-2.5 border ${errors.email ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-primary focus:outline-0 focus:border-transparent transition-all duration-200`}
           placeholder="email.anda@example.com"
         />
         {errors.email && (
@@ -230,7 +230,7 @@ export default function RegisterForm() {
           required
           value={formData.password}
           onChange={handleChange}
-          className={`w-full px-4 py-3 border ${errors.password ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-primary focus:outline-0 focus:border-transparent transition-all duration-200`}
+          className={`w-full px-4 py-2.5 border ${errors.password ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-primary focus:outline-0 focus:border-transparent transition-all duration-200`}
           // placeholder="Minimal 8 karakter dengan huruf besar, kecil, angka, dan simbol (@, $, !, %, *, ?, &)"
           placeholder="Minimal 8 karakter"
         />
@@ -252,7 +252,7 @@ export default function RegisterForm() {
           required
           value={formData.confirmPassword}
           onChange={handleChange}
-          className={`w-full px-4 py-3 border ${errors.confirmPassword ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-primary focus:outline-0 focus:border-transparent transition-all duration-200`}
+          className={`w-full px-4 py-2.5 border ${errors.confirmPassword ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-primary focus:outline-0 focus:border-transparent transition-all duration-200`}
           placeholder="Konfirmasi kata sandi"
         />
         {errors.confirmPassword && (

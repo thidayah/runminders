@@ -97,7 +97,7 @@ export default function ResetPasswordForm({ token }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
       {/* API Response Notification */}
       {apiResponse && (
         <div className={`p-4 rounded-lg ${
@@ -150,7 +150,7 @@ export default function ResetPasswordForm({ token }) {
           required
           value={formData.password}
           onChange={handleChange}
-          className={`w-full px-4 py-3 border ${errors.password ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200`}
+          className={`w-full px-4 py-2.5 border ${errors.password ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200`}
           placeholder="Masukkan password baru"
         />
         {errors.password && (
@@ -171,7 +171,7 @@ export default function ResetPasswordForm({ token }) {
           required
           value={formData.confirmPassword}
           onChange={handleChange}
-          className={`w-full px-4 py-3 border ${errors.confirmPassword ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200`}
+          className={`w-full px-4 py-2.5 border ${errors.confirmPassword ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200`}
           placeholder="Masukkan ulang password baru"
         />
         {errors.confirmPassword && (

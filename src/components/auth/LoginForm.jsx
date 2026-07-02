@@ -203,7 +203,7 @@ export default function LoginForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
       {/* API Response Notification */}
       {apiResponse && (
         <div className={`p-4 rounded-lg ${apiResponse.success
@@ -255,7 +255,7 @@ export default function LoginForm() {
           required
           value={formData.email}
           onChange={handleChange}
-          className={`w-full px-4 py-3 border ${errors.email ? 'border-red-300' : 'border-gray-300'
+          className={`w-full px-4 py-2.5 border ${errors.email ? 'border-red-300' : 'border-gray-300'
             } rounded-lg focus:ring-2 focus:ring-primary focus:outline-0 focus:border-transparent transition-all duration-200`}
           placeholder="email.anda@example.com"
         />
@@ -285,7 +285,7 @@ export default function LoginForm() {
           required
           value={formData.password}
           onChange={handleChange}
-          className={`w-full px-4 py-3 border ${errors.password ? 'border-red-300' : 'border-gray-300'
+          className={`w-full px-4 py-2.5 border ${errors.password ? 'border-red-300' : 'border-gray-300'
             } rounded-lg focus:ring-2 focus:ring-primary focus:outline-0 focus:border-transparent transition-all duration-200`}
           placeholder="Masukkan kata sandi"
         />

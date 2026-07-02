@@ -1,26 +1,14 @@
-import Link from "next/link";
-
 export default function AuthLayout({ children, title, subtitle }) {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Left Side - Form */}
-      <div className="flex-1 flex flex-col justify-center py-12 pt-24 px-4 sm:px-6 lg:px-20 xl:px-24">
+      <div className="flex-1 flex flex-col justify-center py-5 pt-20 sm:py-12 sm:pt-24 px-4 sm:px-6 lg:px-20 xl:px-24">
         <div className="mx-auto w-full max-w-sm lg:max-w-md">
-          {/* Logo */}
-          {/* <div className="text-center mb-8">
-            <button 
-              // onClick={() => window.location.href = '/'}
-              className="text-3xl font-bold text-primary hover:scale-105 transform transition-transform duration-200"
-            >
-              Runminders
-            </button>
-          </div> */}
-
           {/* Content */}
-          <div className="bg-white py-8 px-6 sm:px-10 rounded-2xl shadow-xl border border-gray-100">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-neutral-800">{title}</h2>
-              <p className="mt-2 text-gray-600">{subtitle}</p>
+          <div className="bg-white py-5 px-5 sm:py-8 sm:px-10 rounded-2xl shadow-xl border border-gray-100">
+            <div className="text-center mb-5 sm:mb-8">
+              <h2 className="text-2xl sm:text-3xl font-bold text-neutral-800">{title}</h2>
+              <p className="mt-2 text-sm sm:text-base text-gray-600">{subtitle}</p>
             </div>
 
             {children}
@@ -37,7 +25,7 @@ export default function AuthLayout({ children, title, subtitle }) {
           }}
         >
           {/* Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-white via-neutral/90 to-primary"></div>
+          <div className="absolute inset-0 bg-linear-to-br from-white via-neutral/90 to-primary"></div>
           
           {/* Content */}
           <div className="relative z-10 h-full flex items-center justify-center p-12">
