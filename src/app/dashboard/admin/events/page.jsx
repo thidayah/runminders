@@ -27,6 +27,8 @@ export default function AdminEventsPage() {
     has_next_page: false,
     has_previous_page: false
   })
+  const [deleteTarget, setDeleteTarget] = useState(null) // { id, name }
+  const [actionError, setActionError] = useState('')
 
   // Debounce search
   useEffect(() => {
@@ -40,8 +42,9 @@ export default function AdminEventsPage() {
 
   // Fetch events
   useEffect(() => {
+    if (!token) return
     fetchEvents()
-  }, [debouncedSearch, statusFilter, locationFilter, priceFilter, sortBy, sortOrder, pagination.current_page])
+  }, [token, debouncedSearch, statusFilter, locationFilter, priceFilter, sortBy, sortOrder, pagination.current_page])
 
   const fetchEvents = async () => {
     try {
@@ -75,7 +78,9 @@ export default function AdminEventsPage() {
         params.append('search', debouncedSearch)
       }
 
-      const response = await fetch(`/api/events?${params.toString()}`)
+      const response = await fetch(`/api/admin/events?${params.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
 
       if (!response.ok) {
         throw new Error('Gagal mengambil data events')
@@ -132,13 +137,15 @@ export default function AdminEventsPage() {
     }
   }
 
-  const handleToggleStatus = async (eventId) => {
+  const handleToggleStatus = async (eventId, currentStatus) => {
     try {
       const response = await fetch(`/api/admin/events/${eventId}/toggle-status`, {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ is_active: !currentStatus }),
       })
 
       const result = await response.json()
@@ -147,21 +154,24 @@ export default function AdminEventsPage() {
         // Refresh list
         fetchEvents()
       } else {
-        alert(result.message || 'Gagal mengubah status')
+        setActionError(result.message || 'Gagal mengubah status')
       }
     } catch (error) {
       console.error('Error toggling event status:', error)
-      alert('Terjadi kesalahan. Silakan coba lagi.')
+      setActionError('Terjadi kesalahan. Silakan coba lagi.')
     }
   }
 
-  const handleDelete = async (eventId) => {
-    if (!confirm('Apakah Anda yakin ingin menghapus event ini? Tindakan ini tidak dapat dibatalkan.')) {
-      return
-    }
+  const handleDelete = (eventId, name) => {
+    setDeleteTarget({ id: eventId, name })
+  }
 
+  const confirmDelete = async () => {
+    if (!deleteTarget) return
+    const { id } = deleteTarget
+    setDeleteTarget(null)
     try {
-      const response = await fetch(`/api/admin/events/${eventId}`, {
+      const response = await fetch(`/api/admin/events/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       })
@@ -169,14 +179,13 @@ export default function AdminEventsPage() {
       const result = await response.json()
 
       if (result.success) {
-        // Refresh list
         fetchEvents()
       } else {
-        alert(result.message || 'Gagal menghapus event')
+        setActionError(result.message || 'Gagal menghapus event')
       }
     } catch (error) {
       console.error('Error deleting event:', error)
-      alert('Terjadi kesalahan. Silakan coba lagi.')
+      setActionError('Terjadi kesalahan. Silakan coba lagi.')
     }
   }
 
@@ -236,6 +245,18 @@ export default function AdminEventsPage() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
+        {actionError && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-sm text-red-700">
+              <Icon icon="mdi:alert-circle" className="w-4 h-4 shrink-0" />
+              {actionError}
+            </div>
+            <button onClick={() => setActionError('')} className="text-red-400 hover:text-red-600">
+              <Icon icon="mdi:close" className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
@@ -248,6 +269,73 @@ export default function AdminEventsPage() {
               Buat Event Baru
             </Button>
           </Link>
+        </div>
+
+        {/* Quick Stats */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Total Event</p>
+                <p className="text-2xl font-bold text-gray-900">{pagination.total_items}</p>
+              </div>
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Icon icon="mdi:calendar-star" className="w-6 h-6 text-primary" />
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Aktif</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {events.filter(e => e.is_active).length}
+                </p>
+              </div>
+              <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
+                <Icon icon="mdi:check-circle" className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Virtual</p>
+                <p className="text-2xl font-bold text-purple-600">
+                  {events.filter(e => e.location_type === 'virtual').length}
+                </p>
+              </div>
+              <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                <Icon icon="mdi:video" className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Gratis</p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {events.filter(e => e.is_free).length}
+                </p>
+              </div>
+              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                <Icon icon="mdi:gift" className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Total Peserta</p>
+                <p className="text-2xl font-bold text-orange-600">
+                  {events.reduce((acc, e) => acc + (e.current_participants || 0), 0).toLocaleString()}
+                </p>
+              </div>
+              <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
+                <Icon icon="mdi:account-group" className="w-6 h-6 text-orange-600" />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Filters */}
@@ -366,7 +454,78 @@ export default function AdminEventsPage() {
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto">
+              {/* Mobile card view */}
+              <div className="md:hidden divide-y divide-gray-200">
+                {events.map((event) => (
+                  <div key={event.id} className="p-4 flex gap-3">
+                    <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden shrink-0">
+                      {event.image_url ? (
+                        <img src={event.image_url} alt={event.title} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-12 h-12 rounded-lg bg-linear-to-br from-primary to-accent flex items-center justify-center text-white font-bold">
+                          {event.title.charAt(0)}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="font-medium text-gray-900 truncate">{event.title}</p>
+                          <p className="text-xs text-gray-500 truncate">{event.subtitle}</p>
+                        </div>
+                        <button onClick={() => handleToggleStatus(event.id, event.is_active)} className="shrink-0">
+                          {getStatusBadge(event)}
+                        </button>
+                      </div>
+                      <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
+                        <span className="flex items-center gap-1">
+                          <Icon icon="mdi:calendar" className="w-3.5 h-3.5" />
+                          {formatDate(event.event_date)}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          {getLocationIcon(event.location_type)}
+                          <span className="max-w-[100px] truncate">{event.location || '-'}</span>
+                        </span>
+                        <span>
+                          {event.is_free ? (
+                            <span className="text-green-600 font-medium">Gratis</span>
+                          ) : (
+                            <span>Rp {event.base_price?.toLocaleString('id-ID')}</span>
+                          )}
+                        </span>
+                        <span>{event.current_participants}/{event.max_participants} peserta</span>
+                      </div>
+                      <div className="mt-2 flex items-center gap-1">
+                        <Link
+                          href={`/dashboard/admin/events/${event.id}`}
+                          className="p-1.5 text-gray-600 hover:text-primary hover:bg-gray-100 rounded-lg transition-colors"
+                          title="Edit"
+                        >
+                          <Icon icon="mdi:pencil" className="w-4 h-4" />
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(event.id, event.title)}
+                          className="p-1.5 text-gray-600 hover:text-red-600 hover:bg-gray-100 rounded-lg transition-colors"
+                          title="Hapus"
+                        >
+                          <Icon icon="mdi:delete" className="w-4 h-4" />
+                        </button>
+                        <Link
+                          href={`/events/${event.slug}`}
+                          target="_blank"
+                          className="p-1.5 text-gray-600 hover:text-primary hover:bg-gray-100 rounded-lg transition-colors"
+                          title="Lihat publik"
+                        >
+                          <Icon icon="mdi:eye" className="w-4 h-4" />
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop table */}
+              <div className="hidden md:block overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-gray-50 border-b border-gray-200">
                     <tr>
@@ -403,14 +562,14 @@ export default function AdminEventsPage() {
                                   onError={(e) => {
                                     e.target.style.display = 'none'
                                     e.target.parentElement.innerHTML = `
-                                    <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-sm">
+                                    <div class="w-10 h-10 rounded-lg bg-linear-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-sm">
                                       ${event.title.charAt(0)}
                                     </div>
                                   `
                                   }}
                                 />
                               ) : (
-                                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-sm">
+                                <div className="w-10 h-10 rounded-lg bg-linear-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-sm">
                                   {event.title.charAt(0)}
                                 </div>
                               )}
@@ -515,7 +674,7 @@ export default function AdminEventsPage() {
                               <Icon icon="mdi:pencil" className="w-5 h-5" />
                             </Link>
                             <button
-                              onClick={() => handleDelete(event.id)}
+                              onClick={() => handleDelete(event.id, event.title)}
                               className="p-2 text-gray-600 hover:text-red-600 hover:bg-gray-100 rounded-lg transition-colors"
                               title="Hapus"
                             >
@@ -576,73 +735,40 @@ export default function AdminEventsPage() {
           )}
         </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Event</p>
-                <p className="text-2xl font-bold text-gray-900">{pagination.total_items}</p>
+      </div>
+
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                <Icon icon="mdi:delete-alert" className="w-5 h-5 text-red-600" />
               </div>
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Icon icon="mdi:calendar-star" className="w-6 h-6 text-primary" />
+              <div>
+                <h3 className="font-semibold text-gray-900">Hapus event ini?</h3>
+                <p className="text-sm text-gray-500">Tindakan ini tidak dapat dibatalkan</p>
               </div>
             </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Aktif</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {events.filter(e => e.is_active).length}
-                </p>
-              </div>
-              <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
-                <Icon icon="mdi:check-circle" className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Virtual</p>
-                <p className="text-2xl font-bold text-purple-600">
-                  {events.filter(e => e.location_type === 'virtual').length}
-                </p>
-              </div>
-              <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                <Icon icon="mdi:video" className="w-6 h-6 text-purple-600" />
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Gratis</p>
-                <p className="text-2xl font-bold text-blue-600">
-                  {events.filter(e => e.is_free).length}
-                </p>
-              </div>
-              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                <Icon icon="mdi:gift" className="w-6 h-6 text-blue-600" />
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Peserta</p>
-                <p className="text-2xl font-bold text-orange-600">
-                  {events.reduce((acc, e) => acc + (e.current_participants || 0), 0).toLocaleString()}
-                </p>
-              </div>
-              <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
-                <Icon icon="mdi:account-group" className="w-6 h-6 text-orange-600" />
-              </div>
+            <p className="text-sm text-gray-700 mb-6">
+              Apakah Anda yakin ingin menghapus <span className="font-medium">{deleteTarget.name}</span>?
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteTarget(null)}
+                className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
+              >
+                Ya, Hapus
+              </button>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </DashboardLayout>
   )
 }

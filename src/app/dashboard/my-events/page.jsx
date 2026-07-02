@@ -159,10 +159,10 @@ export default function MyEventsPage() {
         </div>
 
         {/* Stats Summary */}
-        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
             <div className="flex items-center">
-              <div className="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center mr-4">
+              <div className="w-11 h-11 rounded-lg bg-blue-50 flex items-center justify-center mr-4 shrink-0">
                 <Icon icon="mdi:ticket" className="w-6 h-6 text-blue-600" />
               </div>
               <div>
@@ -172,13 +172,13 @@ export default function MyEventsPage() {
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+          <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
             <div className="flex items-center">
-              <div className="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center mr-4">
+              <div className="w-11 h-11 rounded-lg bg-green-50 flex items-center justify-center mr-4 shrink-0">
                 <Icon icon="mdi:calendar-check" className="w-6 h-6 text-green-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">Event Aktif</p>
+                <p className="text-sm text-gray-600">Terkonfirmasi</p>
                 <p className="text-2xl font-bold text-gray-900">
                   {events.filter(e => e.registration.status === 'confirmed').length}
                 </p>
@@ -186,20 +186,20 @@ export default function MyEventsPage() {
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+          <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
             <div className="flex items-center">
-              <div className="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center mr-4">
+              <div className="w-11 h-11 rounded-lg bg-purple-50 flex items-center justify-center mr-4 shrink-0">
                 <Icon icon="mdi:cash" className="w-6 h-6 text-purple-600" />
               </div>
               <div>
                 <p className="text-sm text-gray-600">Total Belanja</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {formatCurrency(events.reduce((sum, event) => sum + (event.category?.price || 0), 0))}
+                  {formatCurrency(events.reduce((sum, e) => sum + (e.category?.price || 0), 0))}
                 </p>
               </div>
             </div>
           </div>
-        </div> */}
+        </div>
 
         {/* Filters */}
         {/* <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6 shadow-sm"> */}
@@ -347,10 +347,12 @@ export default function MyEventsPage() {
                             </Button>
                           </Link>
                           {event.registration.payment_status === 'pending' && (
-                            <Button size="sm" variant="primary">
-                              <Icon icon="mdi:credit-card" className="w-4 h-4 mr-1.5" />
-                              Bayar
-                            </Button>
+                            <Link href={`/dashboard/my-events/${event.registration.id}`}>
+                              <Button size="sm" variant="primary">
+                                <Icon icon="mdi:credit-card" className="w-4 h-4 mr-1.5" />
+                                Bayar
+                              </Button>
+                            </Link>
                           )}
                           {event.registration.status === 'confirmed' && (
                             <Link href={`/events/${event.id}`}>
@@ -497,9 +499,11 @@ export default function MyEventsPage() {
                                 </Link>
                                 
                                 {event.registration.payment_status === 'pending' && (
-                                  <Button size="sm" variant="primary">
-                                    <Icon icon="mdi:credit-card" className="w-4 h-4" />
-                                  </Button>
+                                  <Link href={`/dashboard/my-events/${event.registration.id}`}>
+                                    <Button size="sm" variant="primary" title="Lihat instruksi pembayaran">
+                                      <Icon icon="mdi:credit-card" className="w-4 h-4" />
+                                    </Button>
+                                  </Link>
                                 )}
 
                                 {event.registration.status === 'confirmed' && (
@@ -525,52 +529,63 @@ export default function MyEventsPage() {
 
                   {/* Pagination */}
                   {pagination.total_pages > 1 && (
-                    <div className="px-6 py-4 border-t border-gray-200">
-                      <div className="flex items-center justify-between">
-                        <div className="text-sm text-gray-700">
-                          Menampilkan{' '}
-                          <span className="font-medium">
-                            {((pagination.current_page - 1) * pagination.per_page) + 1}
-                          </span>{' '}
-                          -{' '}
-                          <span className="font-medium">
-                            {Math.min(pagination.current_page * pagination.per_page, pagination.total_items)}
-                          </span>{' '}
-                          dari{' '}
-                          <span className="font-medium">{pagination.total_items}</span>{' '}
-                          event
-                        </div>
-                        <div className="flex space-x-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handlePageChange(pagination.current_page - 1)}
-                            disabled={!pagination.has_previous_page || isLoading}
-                          >
-                            <Icon icon="mdi:chevron-left" className="w-5 h-5" />
-                          </Button>
+                    <div className="px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                      <div className="text-sm text-gray-700">
+                        Menampilkan{' '}
+                        <span className="font-medium">{((pagination.current_page - 1) * pagination.per_page) + 1}</span>
+                        {' – '}
+                        <span className="font-medium">{Math.min(pagination.current_page * pagination.per_page, pagination.total_items)}</span>
+                        {' dari '}
+                        <span className="font-medium">{pagination.total_items}</span> event
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => handlePageChange(pagination.current_page - 1)}
+                          disabled={!pagination.has_previous_page || isLoading}
+                          className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 disabled:text-gray-300 disabled:cursor-not-allowed transition-colors"
+                        >
+                          <Icon icon="mdi:chevron-left" className="w-5 h-5" />
+                        </button>
 
-                          {[...Array(pagination.total_pages)].map((_, i) => (
-                            <Button
-                              key={i + 1}
-                              size="sm"
-                              variant={pagination.current_page === i + 1 ? "primary" : "outline"}
-                              onClick={() => handlePageChange(i + 1)}
-                              disabled={isLoading}
-                            >
-                              {i + 1}
-                            </Button>
-                          ))}
+                        {(() => {
+                          const total = pagination.total_pages
+                          const current = pagination.current_page
+                          const delta = 2
+                          const pages = []
+                          for (let i = Math.max(2, current - delta); i <= Math.min(total - 1, current + delta); i++) {
+                            pages.push(i)
+                          }
+                          if (current - delta > 2) pages.unshift(null)
+                          if (current + delta < total - 1) pages.push(null)
+                          pages.unshift(1)
+                          if (total > 1) pages.push(total)
+                          return pages.map((page, idx) =>
+                            page === null ? (
+                              <span key={`ellipsis-${idx}`} className="px-2 py-2 text-gray-400 text-sm">…</span>
+                            ) : (
+                              <button
+                                key={page}
+                                onClick={() => handlePageChange(page)}
+                                disabled={isLoading}
+                                className={`min-w-[36px] px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                                  current === page
+                                    ? 'bg-primary text-white'
+                                    : 'text-gray-700 hover:bg-gray-100'
+                                }`}
+                              >
+                                {page}
+                              </button>
+                            )
+                          )
+                        })()}
 
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handlePageChange(pagination.current_page + 1)}
-                            disabled={!pagination.has_next_page || isLoading}
-                          >
-                            <Icon icon="mdi:chevron-right" className="w-5 h-5" />
-                          </Button>
-                        </div>
+                        <button
+                          onClick={() => handlePageChange(pagination.current_page + 1)}
+                          disabled={!pagination.has_next_page || isLoading}
+                          className="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 disabled:text-gray-300 disabled:cursor-not-allowed transition-colors"
+                        >
+                          <Icon icon="mdi:chevron-right" className="w-5 h-5" />
+                        </button>
                       </div>
                     </div>
                   )}

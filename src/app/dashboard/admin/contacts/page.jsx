@@ -35,6 +35,8 @@ export default function AdminContactsPage() {
     has_next_page: false,
     has_previous_page: false
   })
+  const [deleteTarget, setDeleteTarget] = useState(null) // { id, name }
+  const [actionError, setActionError] = useState('')
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -82,11 +84,16 @@ export default function AdminContactsPage() {
     }
   }
 
-  const handleDelete = async (id) => {
-    if (!confirm('Hapus pesan ini secara permanen?')) return
+  const handleDelete = (id, name) => {
+    setDeleteTarget({ id, name })
+  }
 
+  const confirmDelete = async () => {
+    if (!deleteTarget) return
+    const { id } = deleteTarget
+    setDeleteTarget(null)
     try {
-      const response = await fetch(`/api/contact/${id}`, {
+      const response = await fetch(`/api/admin/contacts/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       })
@@ -95,10 +102,10 @@ export default function AdminContactsPage() {
       if (result.success) {
         fetchMessages()
       } else {
-        alert(result.message || 'Gagal menghapus pesan')
+        setActionError(result.message || 'Gagal menghapus pesan')
       }
     } catch {
-      alert('Terjadi kesalahan. Silakan coba lagi.')
+      setActionError('Terjadi kesalahan. Silakan coba lagi.')
     }
   }
 
@@ -126,6 +133,18 @@ export default function AdminContactsPage() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
+        {actionError && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-sm text-red-700">
+              <Icon icon="mdi:alert-circle" className="w-4 h-4 shrink-0" />
+              {actionError}
+            </div>
+            <button onClick={() => setActionError('')} className="text-red-400 hover:text-red-600">
+              <Icon icon="mdi:close" className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
         {/* Header */}
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Pesan Masuk</h1>
@@ -248,7 +267,7 @@ export default function AdminContactsPage() {
                               <Icon icon="mdi:eye-outline" className="w-5 h-5" />
                             </Link>
                             <button
-                              onClick={() => handleDelete(msg.id)}
+                              onClick={() => handleDelete(msg.id, msg.name)}
                               className="p-2 text-gray-600 hover:text-red-600 hover:bg-gray-100 rounded-lg transition-colors"
                               title="Hapus"
                             >
@@ -293,6 +312,39 @@ export default function AdminContactsPage() {
           )}
         </div>
       </div>
+
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                <Icon icon="mdi:delete-alert" className="w-5 h-5 text-red-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Hapus pesan ini?</h3>
+                <p className="text-sm text-gray-500">Tindakan ini tidak dapat dibatalkan</p>
+              </div>
+            </div>
+            <p className="text-sm text-gray-700 mb-6">
+              Apakah Anda yakin ingin menghapus pesan dari <span className="font-medium">{deleteTarget.name}</span>?
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteTarget(null)}
+                className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
+              >
+                Ya, Hapus
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </DashboardLayout>
   )
 }

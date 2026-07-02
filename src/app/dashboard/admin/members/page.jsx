@@ -13,6 +13,7 @@ export default function AdminMembersPage() {
   const { user, token, isLoading: authLoading } = useAuth()
   
   const [members, setMembers] = useState([])
+  const [pendingRoleChange, setPendingRoleChange] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
@@ -24,7 +25,7 @@ export default function AdminMembersPage() {
   const [sortOrder, setSortOrder] = useState('desc')
   const [pagination, setPagination] = useState({
     current_page: 1,
-    per_page: 20,
+    per_page: 10,
     total_items: 0,
     total_pages: 0,
     has_next_page: false,
@@ -201,8 +202,16 @@ export default function AdminMembersPage() {
     }
   }
 
-  const handleRoleChange = async (memberId, newRole) => {
-    try {      
+  const handleRoleChange = (memberId, memberName, currentRole, newRole) => {
+    if (currentRole === newRole) return
+    setPendingRoleChange({ memberId, memberName, currentRole, newRole })
+  }
+
+  const confirmRoleChange = async () => {
+    if (!pendingRoleChange) return
+    const { memberId, newRole } = pendingRoleChange
+    setPendingRoleChange(null)
+    try {
       const response = await fetch(`/api/admin/members/${memberId}`, {
         method: 'PUT',
         headers: {
@@ -215,7 +224,6 @@ export default function AdminMembersPage() {
       const result = await response.json()
 
       if (result.success) {
-        // Refresh list
         fetchMembers()
       } else {
         alert(result.message || 'Gagal mengubah role')
@@ -300,12 +308,66 @@ export default function AdminMembersPage() {
           </div>
         </div>
 
+        {/* Quick Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Total Member</p>
+                <p className="text-2xl font-bold text-gray-900">{pagination.total_items}</p>
+              </div>
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Icon icon="mdi:account-group" className="w-6 h-6 text-primary" />
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Aktif</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {members.filter(m => m.is_active).length}
+                </p>
+              </div>
+              <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
+                <Icon icon="mdi:check-circle" className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Terverifikasi</p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {members.filter(m => m.is_email_verified).length}
+                </p>
+              </div>
+              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                <Icon icon="mdi:email-check" className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Admin</p>
+                <p className="text-2xl font-bold text-purple-600">
+                  {members.filter(m => m.role === 'admin').length}
+                </p>
+              </div>
+              <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                <Icon icon="mdi:shield-account" className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Filters */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 space-y-4">
           {/* Search */}
           <div className="relative">
-            <Icon 
-              icon="mdi:magnify" 
+            <Icon
+              icon="mdi:magnify"
               className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5"
             />
             <input
@@ -413,7 +475,60 @@ export default function AdminMembersPage() {
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto">
+              {/* Mobile card view */}
+              <div className="md:hidden divide-y divide-gray-200">
+                {members.map((member) => (
+                  <div key={member.id} className="p-4 flex gap-3">
+                    <div className="w-10 h-10 rounded-full bg-linear-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-sm shrink-0">
+                      {member.avatar_url ? (
+                        <img
+                          src={member.avatar_url}
+                          alt={member.full_name}
+                          className="w-full h-full rounded-full object-cover"
+                          onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.textContent = getInitials(member.full_name) }}
+                        />
+                      ) : getInitials(member.full_name)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0">
+                          <p className="font-medium text-gray-900 truncate">{member.full_name || '-'}</p>
+                          <p className="text-xs text-gray-500 truncate">{member.email}</p>
+                        </div>
+                        <span className={`shrink-0 px-2 py-0.5 rounded-full text-xs font-medium ${member.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-600'}`}>
+                          {member.role}
+                        </span>
+                      </div>
+                      <div className="mt-1.5 flex flex-wrap gap-1.5">
+                        <button
+                          onClick={() => handleToggleStatus(member.id, member.is_active)}
+                          className={`px-2 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-colors ${member.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}
+                        >
+                          {member.is_active ? 'Aktif' : 'Nonaktif'}
+                        </button>
+                        <button
+                          onClick={() => handleToggleVerified(member.id, member.is_email_verified)}
+                          className={`px-2 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-colors ${member.is_email_verified ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'}`}
+                        >
+                          {member.is_email_verified ? 'Verified' : 'Unverified'}
+                        </button>
+                      </div>
+                      <div className="mt-1.5 flex items-center gap-2">
+                        <p className="text-xs text-gray-400">{member.phone_number || 'Tidak ada telepon'}</p>
+                        <Link
+                          href={`/dashboard/admin/members/${member.id}`}
+                          className="ml-auto p-1.5 text-gray-600 hover:text-primary hover:bg-gray-100 rounded-lg transition-colors"
+                        >
+                          <Icon icon="mdi:eye" className="w-4 h-4" />
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop table */}
+              <div className="hidden md:block overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-gray-50 border-b border-gray-200">
                     <tr>
@@ -460,7 +575,7 @@ export default function AdminMembersPage() {
                       <tr key={member.id} className="hover:bg-gray-50 transition-colors">
                         <td className="px-6 py-4">
                           <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                            <div className="w-10 h-10 rounded-full bg-linear-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-sm shrink-0">
                               {member.avatar_url ? (
                                 <img
                                   src={member.avatar_url}
@@ -499,7 +614,7 @@ export default function AdminMembersPage() {
                         <td className="px-6 py-4">
                           <select
                             value={member.role}
-                            onChange={(e) => handleRoleChange(member.id, e.target.value)}
+                            onChange={(e) => handleRoleChange(member.id, member.full_name, member.role, e.target.value)}
                             className="px-2 py-1 text-xs border border-gray-300 rounded-lg focus:ring-1 focus:ring-primary focus:border-transparent cursor-pointer"
                           >
                             <option value="member">Member</option>
@@ -601,60 +716,48 @@ export default function AdminMembersPage() {
           )}
         </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Member</p>
-                <p className="text-2xl font-bold text-gray-900">{pagination.total_items}</p>
+
+      </div>
+
+      {/* Role change confirmation modal */}
+      {pendingRoleChange && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center shrink-0">
+                <Icon icon="mdi:shield-account" className="w-5 h-5 text-yellow-600" />
               </div>
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Icon icon="mdi:account-group" className="w-6 h-6 text-primary" />
+              <div>
+                <h3 className="font-semibold text-gray-900">Ubah Role Member</h3>
+                <p className="text-sm text-gray-500">Tindakan ini akan mengubah hak akses</p>
               </div>
             </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Aktif</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {members.filter(m => m.is_active).length}
-                </p>
-              </div>
-              <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
-                <Icon icon="mdi:check-circle" className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Terverifikasi</p>
-                <p className="text-2xl font-bold text-blue-600">
-                  {members.filter(m => m.is_email_verified).length}
-                </p>
-              </div>
-              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                <Icon icon="mdi:email-check" className="w-6 h-6 text-blue-600" />
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Admin</p>
-                <p className="text-2xl font-bold text-purple-600">
-                  {members.filter(m => m.role === 'admin').length}
-                </p>
-              </div>
-              <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
-                <Icon icon="mdi:shield-account" className="w-6 h-6 text-purple-600" />
-              </div>
+            <p className="text-sm text-gray-700 mb-6">
+              Ubah role <span className="font-medium">{pendingRoleChange.memberName}</span> dari{' '}
+              <span className="px-1.5 py-0.5 bg-gray-100 rounded text-xs font-medium">{pendingRoleChange.currentRole}</span>{' '}
+              ke{' '}
+              <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${pendingRoleChange.newRole === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700'}`}>
+                {pendingRoleChange.newRole}
+              </span>
+              ?
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setPendingRoleChange(null)}
+                className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                onClick={confirmRoleChange}
+                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors"
+              >
+                Ya, Ubah
+              </button>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </DashboardLayout>
   )
 }

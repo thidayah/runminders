@@ -23,6 +23,8 @@ export default function AdminPartnersPage() {
     has_next_page: false,
     has_previous_page: false
   })
+  const [deleteTarget, setDeleteTarget] = useState(null) // { id, name }
+  const [actionError, setActionError] = useState('')
 
   // Debounce search
   useEffect(() => {
@@ -36,8 +38,9 @@ export default function AdminPartnersPage() {
 
   // Fetch partners
   useEffect(() => {
+    if (!token) return
     fetchPartners()
-  }, [debouncedSearch, statusFilter, pagination.current_page])
+  }, [token, debouncedSearch, statusFilter, pagination.current_page])
 
   const fetchPartners = async () => {
     try {
@@ -54,7 +57,9 @@ export default function AdminPartnersPage() {
         params.append('search', debouncedSearch)
       }
 
-      const response = await fetch(`/api/partners?${params.toString()}`)
+      const response = await fetch(`/api/admin/partners?${params.toString()}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      })
 
       if (!response.ok) {
         throw new Error('Gagal mengambil data partner')
@@ -108,21 +113,24 @@ export default function AdminPartnersPage() {
         // Refresh list
         fetchPartners()
       } else {
-        alert(result.message || 'Gagal mengubah status')
+        setActionError(result.message || 'Gagal mengubah status')
       }
     } catch (error) {
       console.error('Error toggling partner status:', error)
-      alert('Terjadi kesalahan. Silakan coba lagi.')
+      setActionError('Terjadi kesalahan. Silakan coba lagi.')
     }
   }
 
-  const handleDelete = async (partnerId) => {
-    if (!confirm('Apakah Anda yakin ingin menghapus partner ini?')) {
-      return
-    }
+  const handleDelete = (partnerId, name) => {
+    setDeleteTarget({ id: partnerId, name })
+  }
 
+  const confirmDelete = async () => {
+    if (!deleteTarget) return
+    const { id } = deleteTarget
+    setDeleteTarget(null)
     try {
-      const response = await fetch(`/api/admin/partners/${partnerId}`, {
+      const response = await fetch(`/api/admin/partners/${id}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       })
@@ -130,14 +138,13 @@ export default function AdminPartnersPage() {
       const result = await response.json()
 
       if (result.success) {
-        // Refresh list
         fetchPartners()
       } else {
-        alert(result.message || 'Gagal menghapus partner')
+        setActionError(result.message || 'Gagal menghapus partner')
       }
     } catch (error) {
       console.error('Error deleting partner:', error)
-      alert('Terjadi kesalahan. Silakan coba lagi.')
+      setActionError('Terjadi kesalahan. Silakan coba lagi.')
     }
   }
 
@@ -153,6 +160,18 @@ export default function AdminPartnersPage() {
   return (
     <DashboardLayout>
       <div className="space-y-6">
+        {actionError && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-sm text-red-700">
+              <Icon icon="mdi:alert-circle" className="w-4 h-4 shrink-0" />
+              {actionError}
+            </div>
+            <button onClick={() => setActionError('')} className="text-red-400 hover:text-red-600">
+              <Icon icon="mdi:close" className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
@@ -165,6 +184,60 @@ export default function AdminPartnersPage() {
               Tambah Partner Baru
             </Button>
           </Link>
+        </div>
+
+        {/* Quick Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Total Partner</p>
+                <p className="text-2xl font-bold text-gray-900">{pagination.total_items}</p>
+              </div>
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Icon icon="mdi:handshake" className="w-6 h-6 text-primary" />
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Partner Aktif</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {partners.filter(p => p.is_active).length}
+                </p>
+              </div>
+              <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
+                <Icon icon="mdi:check-circle" className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Partner Nonaktif</p>
+                <p className="text-2xl font-bold text-gray-600">
+                  {partners.filter(p => !p.is_active).length}
+                </p>
+              </div>
+              <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
+                <Icon icon="mdi:close-circle" className="w-6 h-6 text-gray-600" />
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Dengan Website</p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {partners.filter(p => p.website).length}
+                </p>
+              </div>
+              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                <Icon icon="mdi:web" className="w-6 h-6 text-blue-600" />
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Filters */}
@@ -239,7 +312,66 @@ export default function AdminPartnersPage() {
             </div>
           ) : (
             <>
-              <div className="overflow-x-auto">
+              {/* Mobile card view */}
+              <div className="md:hidden divide-y divide-gray-200">
+                {partners.map((partner) => (
+                  <div key={partner.id} className="p-4 flex gap-3">
+                    <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
+                      {partner.logo_url ? (
+                        <img src={partner.logo_url} alt={partner.name} className="max-w-full max-h-full object-contain" />
+                      ) : (
+                        <div className="w-12 h-12 rounded-lg bg-linear-to-br from-primary to-accent flex items-center justify-center text-white font-bold">
+                          {partner.name.charAt(0)}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <p className="font-medium text-gray-900 truncate">{partner.name}</p>
+                        <button
+                          onClick={() => handleToggleStatus(partner.id, partner.is_active)}
+                          className={`shrink-0 px-2 py-0.5 rounded-full text-xs font-medium cursor-pointer transition-colors ${partner.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}
+                        >
+                          {partner.is_active ? 'Aktif' : 'Nonaktif'}
+                        </button>
+                      </div>
+                      <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
+                        {partner.website && (
+                          <a href={partner.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-primary hover:underline">
+                            <Icon icon="mdi:link" className="w-3.5 h-3.5" />
+                            <span className="truncate max-w-[120px]">{partner.website.replace(/^https?:\/\//, '')}</span>
+                          </a>
+                        )}
+                        {partner.contact_person && (
+                          <span className="flex items-center gap-1">
+                            <Icon icon="mdi:account" className="w-3.5 h-3.5" />
+                            {partner.contact_person}
+                          </span>
+                        )}
+                      </div>
+                      <div className="mt-2 flex items-center gap-1">
+                        <Link
+                          href={`/dashboard/admin/partners/${partner.id}`}
+                          className="p-1.5 text-gray-600 hover:text-primary hover:bg-gray-100 rounded-lg transition-colors"
+                          title="Edit"
+                        >
+                          <Icon icon="mdi:pencil" className="w-4 h-4" />
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(partner.id, partner.name)}
+                          className="p-1.5 text-gray-600 hover:text-red-600 hover:bg-gray-100 rounded-lg transition-colors"
+                          title="Hapus"
+                        >
+                          <Icon icon="mdi:delete" className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Desktop table */}
+              <div className="hidden md:block overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-gray-50 border-b border-gray-200">
                     <tr>
@@ -265,14 +397,14 @@ export default function AdminPartnersPage() {
                                 onError={(e) => {
                                   e.target.style.display = 'none'
                                   e.target.parentElement.innerHTML = `
-                                  <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-sm">
+                                  <div class="w-10 h-10 rounded-lg bg-linear-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-sm">
                                     ${partner.name.charAt(0)}
                                   </div>
                                 `
                                 }}
                               />
                             ) : (
-                              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-sm">
+                              <div className="w-10 h-10 rounded-lg bg-linear-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-sm">
                                 {partner.name.charAt(0)}
                               </div>
                             )}
@@ -323,7 +455,7 @@ export default function AdminPartnersPage() {
                               <Icon icon="mdi:pencil" className="w-5 h-5" />
                             </Link>
                             <button
-                              onClick={() => handleDelete(partner.id)}
+                              onClick={() => handleDelete(partner.id, partner.name)}
                               className="p-2 text-gray-600 hover:text-red-600 hover:bg-gray-100 rounded-lg transition-colors"
                               title="Hapus"
                             >
@@ -376,60 +508,41 @@ export default function AdminPartnersPage() {
           )}
         </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Partner</p>
-                <p className="text-2xl font-bold text-gray-900">{pagination.total_items}</p>
+
+      </div>
+
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-2xl shadow-xl max-w-sm w-full p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                <Icon icon="mdi:delete-alert" className="w-5 h-5 text-red-600" />
               </div>
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Icon icon="mdi:handshake" className="w-6 h-6 text-primary" />
+              <div>
+                <h3 className="font-semibold text-gray-900">Hapus partner ini?</h3>
+                <p className="text-sm text-gray-500">Tindakan ini tidak dapat dibatalkan</p>
               </div>
             </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Partner Aktif</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {partners.filter(p => p.is_active).length}
-                </p>
-              </div>
-              <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
-                <Icon icon="mdi:check-circle" className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Partner Nonaktif</p>
-                <p className="text-2xl font-bold text-gray-600">
-                  {partners.filter(p => !p.is_active).length}
-                </p>
-              </div>
-              <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
-                <Icon icon="mdi:close-circle" className="w-6 h-6 text-gray-600" />
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Dengan Website</p>
-                <p className="text-2xl font-bold text-blue-600">
-                  {partners.filter(p => p.website).length}
-                </p>
-              </div>
-              <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                <Icon icon="mdi:web" className="w-6 h-6 text-blue-600" />
-              </div>
+            <p className="text-sm text-gray-700 mb-6">
+              Apakah Anda yakin ingin menghapus <span className="font-medium">{deleteTarget.name}</span>?
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteTarget(null)}
+                className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                Batal
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
+              >
+                Ya, Hapus
+              </button>
             </div>
           </div>
         </div>
-      </div>
+      )}
     </DashboardLayout>
   )
 }

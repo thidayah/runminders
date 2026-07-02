@@ -22,6 +22,7 @@ export default function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState('home')
+  const [avatarError, setAvatarError] = useState(false)
 
   const pathname = usePathname()
   const router = useRouter()
@@ -29,6 +30,10 @@ export default function Header() {
 
   // Get authentication state
   const { user, isAuthenticated, isLoading, logout } = useAuth()
+
+  useEffect(() => {
+    setAvatarError(false)
+  }, [user])
 
   // Cek apakah halaman saat ini termasuk yang header-nya transparan
   const isTransparentPage = transparentHeaderPages.some(page => {
@@ -245,15 +250,15 @@ export default function Header() {
                 >
                   <div className="flex items-center space-x-2">
                     <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-                      {user?.avatar_url ? (
+                      {user?.avatar_url && !avatarError ? (
                         <img
                           src={user.avatar_url}
                           alt={user?.full_name || 'User'}
                           className="w-8 h-8 rounded-full object-cover"
+                          onError={() => setAvatarError(true)}
                         />
                       ) : (
-                        <span className={`text-sm font-medium ${getTextColor() === 'text-white' && !isScrolled ? 'text-white' : 'text-white'
-                          }`}>
+                        <span className="text-sm font-medium text-white">
                           {user?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
                         </span>
                       )}
@@ -378,11 +383,12 @@ export default function Header() {
                   {/* User Info */}
                   <div className="flex items-center px-2 py-3 mb-2">
                     <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center mr-3">
-                      {user?.avatar_url ? (
+                      {user?.avatar_url && !avatarError ? (
                         <img
                           src={user.avatar_url}
                           alt={user?.full_name || 'User'}
                           className="w-10 h-10 rounded-full object-cover"
+                          onError={() => setAvatarError(true)}
                         />
                       ) : (
                         <span className="text-white font-medium">

@@ -299,19 +299,19 @@ export default function ProfilePage() {
                     placeholder="email@contoh.com"
                     disabled={true}
                   />
-                  {/* <p className="mt-1 text-sm text-gray-500">
+                  <p className="mt-1 text-sm">
                     {user.is_email_verified ? (
-                      <span className="text-green-600 flex items-center">
-                        <Icon icon="mdi:check-circle" className="w-4 h-4 mr-1" />
+                      <span className="text-green-600 flex items-center gap-1">
+                        <Icon icon="mdi:check-circle" className="w-4 h-4" />
                         Email terverifikasi
                       </span>
                     ) : (
-                      <span className="text-yellow-600 flex items-center">
-                        <Icon icon="mdi:alert-circle" className="w-4 h-4 mr-1" />
+                      <span className="text-yellow-600 flex items-center gap-1">
+                        <Icon icon="mdi:alert-circle" className="w-4 h-4" />
                         Email belum diverifikasi
                       </span>
                     )}
-                  </p> */}
+                  </p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -461,31 +461,39 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              {/* Password Requirements */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h4 className="text-sm font-medium text-blue-800 mb-2">
-                  <Icon icon="mdi:information" className="w-4 h-4 inline-block mr-1" />
-                  Tips Password yang Aman:
-                </h4>
-                <ul className="text-sm text-blue-700 space-y-1">
-                  <li className="flex items-center">
-                    <Icon icon="mdi:check" className="w-4 h-4 mr-2 text-green-600" />
-                    Minimal 8 karakter
-                  </li>
-                  <li className="flex items-center">
-                    <Icon icon="mdi:check" className="w-4 h-4 mr-2 text-green-600" />
-                    Kombinasi huruf besar dan kecil
-                  </li>
-                  <li className="flex items-center">
-                    <Icon icon="mdi:check" className="w-4 h-4 mr-2 text-green-600" />
-                    Gunakan angka dan simbol
-                  </li>
-                  <li className="flex items-center">
-                    <Icon icon="mdi:check" className="w-4 h-4 mr-2 text-green-600" />
-                    Hindari password yang mudah ditebak
-                  </li>
-                </ul>
-              </div>
+              {/* Password Requirements — reaktif */}
+              {(() => {
+                const pwd = passwordData.new_password
+                const typing = pwd.length > 0
+                const checks = [
+                  { label: 'Minimal 8 karakter', met: pwd.length >= 8 },
+                  { label: 'Kombinasi huruf besar dan kecil', met: /[A-Z]/.test(pwd) && /[a-z]/.test(pwd) },
+                  { label: 'Mengandung angka', met: /[0-9]/.test(pwd) },
+                  { label: 'Mengandung simbol (mis. @, #, !)', met: /[^a-zA-Z0-9]/.test(pwd) },
+                ]
+                const allMet = checks.every(c => c.met)
+                return (
+                  <div className={`border rounded-lg p-4 transition-colors ${typing ? (allMet ? 'bg-green-50 border-green-200' : 'bg-blue-50 border-blue-200') : 'bg-gray-50 border-gray-200'}`}>
+                    <h4 className={`text-sm font-medium mb-2 ${typing ? (allMet ? 'text-green-800' : 'text-blue-800') : 'text-gray-700'}`}>
+                      <Icon icon={allMet && typing ? 'mdi:shield-check' : 'mdi:information'} className="w-4 h-4 inline-block mr-1" />
+                      {allMet && typing ? 'Password kuat!' : 'Persyaratan password:'}
+                    </h4>
+                    <ul className="text-sm space-y-1.5">
+                      {checks.map(({ label, met }) => (
+                        <li key={label} className="flex items-center gap-2">
+                          <Icon
+                            icon={met ? 'mdi:check-circle' : typing ? 'mdi:close-circle' : 'mdi:circle-outline'}
+                            className={`w-4 h-4 shrink-0 ${met ? 'text-green-600' : typing ? 'text-gray-400' : 'text-gray-300'}`}
+                          />
+                          <span className={met ? 'text-green-700' : typing ? 'text-gray-600' : 'text-gray-500'}>
+                            {label}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )
+              })()}
 
               {/* Submit Button */}
               <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">

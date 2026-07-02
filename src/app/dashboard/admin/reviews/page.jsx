@@ -142,6 +142,49 @@ export default function AdminReviewsPage() {
           </Link>
         </div>
 
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Total Review</p>
+                <p className="text-2xl font-bold text-gray-900">{pagination.total_items}</p>
+              </div>
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Icon icon="mdi:comment-quote" className="w-6 h-6 text-primary" />
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Ditampilkan</p>
+                <p className="text-2xl font-bold text-green-600">
+                  {reviews.filter(r => r.is_active).length}
+                </p>
+              </div>
+              <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
+                <Icon icon="mdi:check-circle" className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Rating Rata-rata</p>
+                <p className="text-2xl font-bold text-yellow-500">
+                  {reviews.length > 0
+                    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
+                    : '—'}
+                </p>
+              </div>
+              <div className="w-10 h-10 rounded-lg bg-yellow-100 flex items-center justify-center">
+                <Icon icon="mdi:star" className="w-6 h-6 text-yellow-500" />
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Filters */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
           <div className="flex flex-col sm:flex-row gap-4">
@@ -323,48 +366,6 @@ export default function AdminReviewsPage() {
           )}
         </div>
 
-        {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Review</p>
-                <p className="text-2xl font-bold text-gray-900">{pagination.total_items}</p>
-              </div>
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                <Icon icon="mdi:comment-quote" className="w-6 h-6 text-primary" />
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Ditampilkan</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {reviews.filter(r => r.is_active).length}
-                </p>
-              </div>
-              <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
-                <Icon icon="mdi:check-circle" className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Rating Rata-rata</p>
-                <p className="text-2xl font-bold text-yellow-500">
-                  {reviews.length > 0
-                    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
-                    : '—'}
-                </p>
-              </div>
-              <div className="w-10 h-10 rounded-lg bg-yellow-100 flex items-center justify-center">
-                <Icon icon="mdi:star" className="w-6 h-6 text-yellow-500" />
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </DashboardLayout>
   )

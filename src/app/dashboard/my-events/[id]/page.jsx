@@ -11,7 +11,7 @@ import Link from 'next/link'
 export default function MyEventDetailPage() {
   const params = useParams()
   const router = useRouter()
-  const { user, token } = useAuth()
+  const { token } = useAuth()
   const [data, setData] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isPrinting, setIsPrinting] = useState(false)
@@ -219,11 +219,21 @@ export default function MyEventDetailPage() {
               {isPrinting ? 'Mempersiapkan...' : 'Cetak Invoice'}
             </Button>
 
-            {registration.payment_status === 'pending' && (
-              <Button>
-                <Icon icon="mdi:credit-card" className="w-5 h-5 mr-2" />
-                Lanjutkan Pembayaran
-              </Button>
+            {registration.payment_status === 'pending' && paymentTransaction?.raw_response?.redirect_url && (
+              <a href={paymentTransaction.raw_response.redirect_url} target="_blank" rel="noopener noreferrer">
+                <Button>
+                  <Icon icon="mdi:credit-card" className="w-5 h-5 mr-2" />
+                  Lanjutkan Pembayaran
+                </Button>
+              </a>
+            )}
+            {registration.payment_status === 'pending' && !paymentTransaction?.raw_response?.redirect_url && (
+              <a href="#payment-instructions">
+                <Button>
+                  <Icon icon="mdi:information-outline" className="w-5 h-5 mr-2" />
+                  Lihat Instruksi Bayar
+                </Button>
+              </a>
             )}
 
             {registration.status === 'pending' && registration.payment_status === 'pending' && (
@@ -419,7 +429,7 @@ export default function MyEventDetailPage() {
 
           {/* Payment Information (Only for pending payments) */}
           {registration.payment_status === 'pending' && paymentTransaction && (
-            <div className="mt-8 print:mt-4">
+            <div id="payment-instructions" className="mt-8 print:mt-4">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">Instruksi Pembayaran</h3>
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
                 <div className="space-y-4">

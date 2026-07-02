@@ -69,7 +69,7 @@ export default function Footer() {
 
         {/* Copyright */}
         <div className="border-t  mt-8 pt-8 text-center text-gray-400">
-          &copy; {new Date().getFullYear()} Runminders. All rights reserved.
+          &copy; 2025 Runminders. All rights reserved.
         </div>
       </div>
     </footer>
